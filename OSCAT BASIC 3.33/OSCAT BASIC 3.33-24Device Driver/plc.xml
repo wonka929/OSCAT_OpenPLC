@@ -1,0 +1,2552 @@
+<?xml version='1.0' encoding='utf-8'?>
+<project xmlns:ns1="http://www.plcopen.org/xml/tc6_0201" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.plcopen.org/xml/tc6_0201">
+  <fileHeader companyName="Unbekannt" productName="Unbenannt" productVersion="1" creationDateTime="2019-09-11T21:01:52"/>
+  <contentHeader name="Unbenannt" modificationDateTime="2019-09-12T23:08:22">
+    <coordinateInfo>
+      <fbd>
+        <scaling x="10" y="10"/>
+      </fbd>
+      <ld>
+        <scaling x="10" y="10"/>
+      </ld>
+      <sfc>
+        <scaling x="10" y="10"/>
+      </sfc>
+    </coordinateInfo>
+  </contentHeader>
+  <types>
+    <dataTypes>
+      <dataType name="OSCAT_PARSET_X">
+        <baseType>
+          <array>
+            <dimension lower="1" upper="4"/>
+            <baseType>
+              <REAL/>
+            </baseType>
+          </array>
+        </baseType>
+      </dataType>
+      <dataType name="OSCAT_PARSET">
+        <baseType>
+          <array>
+            <dimension lower="0" upper="3"/>
+            <baseType>
+              <derived name="OSCAT_PARSET_X"/>
+            </baseType>
+          </array>
+        </baseType>
+      </dataType>
+    </dataTypes>
+    <pous>
+      <pou name="TUNE2" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="SET">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="SU">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="SD">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="FU">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="FD">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="RST">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="SS">
+              <type>
+                <REAL/>
+              </type>
+              <initialValue>
+                <simpleValue value="0.1"/>
+              </initialValue>
+            </variable>
+            <variable name="FS">
+              <type>
+                <REAL/>
+              </type>
+              <initialValue>
+                <simpleValue value="5.0"/>
+              </initialValue>
+            </variable>
+            <variable name="LIMIT_L">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="LIMIT_H">
+              <type>
+                <REAL/>
+              </type>
+              <initialValue>
+                <simpleValue value="100.0"/>
+              </initialValue>
+            </variable>
+            <variable name="RST_VAL">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="SET_VAL">
+              <type>
+                <REAL/>
+              </type>
+              <initialValue>
+                <simpleValue value="100.0"/>
+              </initialValue>
+            </variable>
+            <variable name="TR">
+              <type>
+                <TIME/>
+              </type>
+              <initialValue>
+                <simpleValue value="t#500ms"/>
+              </initialValue>
+            </variable>
+            <variable name="S1">
+              <type>
+                <REAL/>
+              </type>
+              <initialValue>
+                <simpleValue value="2.0"/>
+              </initialValue>
+            </variable>
+            <variable name="S2">
+              <type>
+                <REAL/>
+              </type>
+              <initialValue>
+                <simpleValue value="10.0"/>
+              </initialValue>
+            </variable>
+            <variable name="Y">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+          <localVars>
+            <variable name="tx">
+              <type>
+                <UDINT/>
+              </type>
+            </variable>
+            <variable name="start">
+              <type>
+                <UDINT/>
+              </type>
+            </variable>
+            <variable name="state">
+              <type>
+                <INT/>
+              </type>
+            </variable>
+            <variable name="in">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="_step">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="speed">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="y_start">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[tx:= T_PLC_MS(en:=true);
+
+IF rst THEN
+	Y := RST_val;
+	state := 0;
+ELSIF set THEN
+	Y := SET_val;
+	state := 0;
+ELSIF state > 0 THEN
+	(* key has been pushed state machine operating *)
+	(* first read the correct input *)
+	CASE state OF
+		1 :	(* slow up *)
+			in := su;
+		2 :	(* slow down *)
+			in := sd;
+		3 :	(* fast up *)
+			in := fu;
+		4 :	(* fast down *)
+			in := fd;
+	END_CASE;
+	(* check for single step operation *)
+	IF NOT in AND tx - start <= TIME_TO_UDINT(TR) THEN
+		Y := Y_start + _step;
+		state := 0;
+	(* check if ramp needs to be generated *)
+	ELSIF in AND tx - start >= TIME_TO_UDINT(TR) THEN
+		Y := Y_start + UDINT_TO_REAL(tx - start - TIME_TO_UDINT(TR)) * speed;
+	ELSIF NOT in THEN
+		state := 0;
+	END_IF;
+ELSIF su THEN
+	(* slow step up *)
+	state := 1;
+	start := tx;
+	_step := ss;
+	speed := s1 * 1.0E-3;
+	Y_start := Y;
+ELSIF sd THEN
+	(* slow step down *)
+	state := 2;
+	start := tx;
+	_step := -ss;
+	speed := -s1 * 1.0E-3;
+	Y_start := Y;
+ELSIF fu THEN
+	(* fast step up *)
+	state := 3;
+	start := tx;
+	_step := fs;
+	speed := s2 * 1.0E-3;
+	y_start := Y;
+ELSIF fd THEN
+	(* fast step down *)
+	state := 4;
+	start := tx;
+	_step := -fs;
+	speed := -s2 * 1.0E-3;
+	y_start := Y;
+END_IF;
+
+(* make sure output does not exceed limits *)
+Y := LIMIT(LIMIT_L, Y, LIMIT_H);
+
+
+(*From OSCAT Library, www.oscat.de *)
+(* T_PLC_MS required *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[tune2 generates an output signal which is set by input switches.]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="T_PLC_US" pouType="function">
+        <interface>
+          <returnType>
+            <UDINT/>
+          </returnType>
+          <localVars>
+            <variable name="tx">
+              <type>
+                <UDINT/>
+              </type>
+            </variable>
+          </localVars>
+          <inputVars>
+            <variable name="debug">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+          </inputVars>
+          <localVars>
+            <variable name="N">
+              <type>
+                <INT/>
+              </type>
+              <initialValue>
+                <simpleValue value="0"/>
+              </initialValue>
+            </variable>
+            <variable name="offset">
+              <type>
+                <UDINT/>
+              </type>
+              <initialValue>
+                <simpleValue value="0"/>
+              </initialValue>
+            </variable>
+            <variable name="temp">
+              <type>
+                <DWORD/>
+              </type>
+              <initialValue>
+                <simpleValue value="1"/>
+              </initialValue>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[{extern unsigned long __tick;
+extern unsigned long long common_ticktime__;
+unsigned long long ticktime_ms = (common_ticktime__)/1000000;
+UDINT plc_time = (UDINT)(ticktime_ms * (unsigned long long)__tick);
+TX = plc_time}
+
+T_PLC_US := tx*1000;
+IF debug THEN
+	T_PLC_US := (DWORD_TO_UDINT(SHL(UDINT_TO_DWORD(T_PLC_US),N) OR SHL(temp,N))-1) + OFFSET;
+END_IF;
+
+(* Original Code:
+tx := TIME();
+T_PLC_US := TIME_TO_DWORD(Tx)*1000;
+IF debug THEN
+	T_PLC_US := (SHL(T_PLC_US,N) OR SHL(DWORD#1,N)-1) + OFFSET;
+END_IF;
+*)
+
+(* From OSCAT library, www.oscat.de
+
+this is a temporary T_PLC_US FB until OpenPLC gets it´s own time() functionality *)
+
+(* PLC_TIME and Global variables PLC_SCAN_CYCL and PLC_CYCL_TIME required *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[Output current execution time in microseconds]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="TC_S" pouType="functionBlock">
+        <interface>
+          <outputVars>
+            <variable name="TC">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </outputVars>
+          <localVars>
+            <variable name="init">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="tx">
+              <type>
+                <UDINT/>
+              </type>
+            </variable>
+            <variable name="last">
+              <type>
+                <UDINT/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[tx:= T_PLC_US(en:=true);
+
+IF NOT init THEN
+	init := TRUE;
+	TC := 0.0;
+ELSE
+	tc := UDINT_TO_REAL(tx - last) * 1.0E-6;
+END_IF;
+last := tx;
+
+(* From OSCAT Library, www.oscat.de *)
+(* T_PLC_MS, R2_ADD required *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[TC_S delivers the time it was last called on the output TC in seconds]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="BIT_OF_DWORD" pouType="function">
+        <interface>
+          <returnType>
+            <BOOL/>
+          </returnType>
+          <inputVars>
+            <variable name="IN">
+              <type>
+                <DWORD/>
+              </type>
+            </variable>
+            <variable name="N">
+              <type>
+                <INT/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[BIT_OF_DWORD := (SHR(in,N) AND 16#00000001) > 0;
+
+(* From Oscat Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function extracts a single bit from the nth position from right (right is lowest bit the lowest Bit (Bit0 from in) is selected with N=.]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="INC" pouType="function">
+        <interface>
+          <returnType>
+            <INT/>
+          </returnType>
+          <inputVars>
+            <variable name="X">
+              <type>
+                <INT/>
+              </type>
+            </variable>
+            <variable name="_D">
+              <type>
+                <INT/>
+              </type>
+            </variable>
+            <variable name="M">
+              <type>
+                <INT/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[inc := (X + _D + M + 1) MOD (M + 1);
+(* from OSCAT library; www.oscat.de  *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[This is a increment function which increments the input X by the value D and compares the result with M. if the output exceeds M it will continue to count from 0 again.]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="BIT_LOAD_B" pouType="function">
+        <interface>
+          <returnType>
+            <BYTE/>
+          </returnType>
+          <inputVars>
+            <variable name="IN">
+              <type>
+                <BYTE/>
+              </type>
+            </variable>
+            <variable name="VAL">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="POS">
+              <type>
+                <INT/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[IF VAL THEN
+	BIT_LOAD_B := in OR SHL(BYTE#1,pos);
+ELSE
+	BIT_LOAD_B := in AND (NOT SHL(BYTE#1,pos));
+END_IF;
+
+(*From OSCAT Library, www.oscat.de*)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function loads a bit into a byte at position pos.]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="T_PLC_MS" pouType="function">
+        <interface>
+          <returnType>
+            <UDINT/>
+          </returnType>
+          <localVars>
+            <variable name="tx">
+              <type>
+                <UDINT/>
+              </type>
+            </variable>
+          </localVars>
+          <inputVars>
+            <variable name="debug">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+          </inputVars>
+          <localVars>
+            <variable name="N">
+              <type>
+                <INT/>
+              </type>
+              <initialValue>
+                <simpleValue value="0"/>
+              </initialValue>
+            </variable>
+            <variable name="offset">
+              <type>
+                <UDINT/>
+              </type>
+              <initialValue>
+                <simpleValue value="0"/>
+              </initialValue>
+            </variable>
+            <variable name="temp">
+              <type>
+                <DWORD/>
+              </type>
+              <initialValue>
+                <simpleValue value="1"/>
+              </initialValue>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[tx := 0;
+
+{extern unsigned long __tick;
+extern unsigned long long common_ticktime__;
+unsigned long long ticktime_ms = (common_ticktime__)/1000000;
+UDINT plc_time = (UDINT)(ticktime_ms * (unsigned long long)__tick);
+TX = plc_time}
+
+T_PLC_MS := tx;
+IF debug THEN
+	T_PLC_MS := (DWORD_TO_UDINT(SHL(UDINT_TO_DWORD(T_PLC_MS),N) OR SHL(temp,N))-1) + OFFSET;
+END_IF;
+
+(* Original Code:
+tx := TIME();
+T_PLC_MS := TIME_TO_DWORD(Tx);
+IF debug THEN
+	T_PLC_MS := (SHL(T_PLC_MS,N) OR SHL(DWORD#1,N)-1) + OFFSET;
+END_IF;
+*)
+
+(* From OSCAT library, www.oscat.de
+
+this is a temporary T_PLC_MS FB until OpenPLC gets it´s own time() functionality *)
+
+(* PLC_TIME and Global variables PLC_SCAN_CYCL and PLC_CYCL_TIME required *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[Output current execution time in miliseconds]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="TP_1D" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="IN">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="PT1">
+              <type>
+                <TIME/>
+              </type>
+            </variable>
+            <variable name="PTD">
+              <type>
+                <TIME/>
+              </type>
+            </variable>
+            <variable name="RST">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="Q">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="W">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+          </outputVars>
+          <localVars>
+            <variable name="tx">
+              <type>
+                <TIME/>
+              </type>
+            </variable>
+            <variable name="start">
+              <type>
+                <TIME/>
+              </type>
+            </variable>
+            <variable name="ix">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[tx := UDINT_TO_TIME(T_PLC_MS(en:=true));
+
+IF RST THEN
+	Q := FALSE;
+	rst := FALSE;
+	W := FALSE;
+ELSIF W THEN
+	IF tx - start >= PTD THEN
+		W := FALSE;
+	END_IF;
+ELSIF IN AND NOT ix THEN
+	Q := TRUE;
+	start := tx;
+	in := FALSE;
+ELSIF tx - start >= PT1 THEN
+	Q := FALSE;
+	W := TRUE;
+	start := tx;
+END_IF;
+
+ix := IN;
+
+(*From OSCAT Library, www.oscat.de *)
+(* T_PLC_MS required *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[TP_2 generates a pulse every time it is calles with in := TRUE.]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="program0" pouType="program">
+        <interface>
+          <localVars>
+            <variable name="LocalVar0">
+              <type>
+                <DINT/>
+              </type>
+            </variable>
+            <variable name="LocalVar1">
+              <type>
+                <DINT/>
+              </type>
+            </variable>
+            <variable name="LocalVar2">
+              <type>
+                <DINT/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <FBD>
+            <block localId="1" typeName="ADD" executionOrderId="0" height="60" width="70">
+              <position x="450" y="90"/>
+              <inputVariables>
+                <variable formalParameter="IN1">
+                  <connectionPointIn>
+                    <relPosition x="0" y="30"/>
+                    <connection refLocalId="2">
+                      <position x="450" y="120"/>
+                      <position x="400" y="120"/>
+                    </connection>
+                  </connectionPointIn>
+                </variable>
+                <variable formalParameter="IN2">
+                  <connectionPointIn>
+                    <relPosition x="0" y="50"/>
+                    <connection refLocalId="3">
+                      <position x="450" y="140"/>
+                      <position x="400" y="140"/>
+                    </connection>
+                  </connectionPointIn>
+                </variable>
+              </inputVariables>
+              <inOutVariables/>
+              <outputVariables>
+                <variable formalParameter="OUT">
+                  <connectionPointOut>
+                    <relPosition x="70" y="30"/>
+                  </connectionPointOut>
+                </variable>
+              </outputVariables>
+            </block>
+            <inVariable localId="2" executionOrderId="0" height="30" width="90" negated="false">
+              <position x="310" y="100"/>
+              <connectionPointOut>
+                <relPosition x="90" y="20"/>
+              </connectionPointOut>
+              <expression>LocalVar0</expression>
+            </inVariable>
+            <inVariable localId="3" executionOrderId="0" height="30" width="90" negated="false">
+              <position x="310" y="130"/>
+              <connectionPointOut>
+                <relPosition x="90" y="10"/>
+              </connectionPointOut>
+              <expression>LocalVar1</expression>
+            </inVariable>
+            <outVariable localId="4" executionOrderId="0" height="30" width="90" negated="false">
+              <position x="590" y="100"/>
+              <connectionPointIn>
+                <relPosition x="0" y="20"/>
+                <connection refLocalId="1" formalParameter="OUT">
+                  <position x="590" y="120"/>
+                  <position x="520" y="120"/>
+                </connection>
+              </connectionPointIn>
+              <expression>LocalVar2</expression>
+            </outVariable>
+          </FBD>
+        </body>
+      </pou>
+      <pou name="DRIVER_1" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="SET">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="IN">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="RST">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="TOGGLE_MODE">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="TIMEOUT">
+              <type>
+                <TIME/>
+              </type>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="Q">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+          </outputVars>
+          <localVars>
+            <variable name="off">
+              <type>
+                <derived name="TON"/>
+              </type>
+            </variable>
+            <variable name="edge">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[IF off.Q THEN Q := FALSE; END_IF;
+IF rst THEN
+	Q := FALSE;
+ELSIF set THEN
+	Q := TRUE;
+ELSIF IN AND NOT edge THEN
+	IF toggle_mode THEN q := NOT Q; ELSE q := TRUE; END_IF;
+END_IF;
+edge := in;
+IF timeout > t#0s THEN off(in := Q, PT := Timeout); END_IF;
+
+(* From OSCAT Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[driver_1 is a multi purpose driver]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="DRIVER_4" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="SET">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="IN0">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="IN1">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="IN2">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="IN3">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="RST">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="TOGGLE_MODE">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="TIMEOUT">
+              <type>
+                <TIME/>
+              </type>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="Q0">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="Q1">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="Q2">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="Q3">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+          </outputVars>
+          <localVars>
+            <variable name="d0">
+              <type>
+                <derived name="DRIVER_1"/>
+              </type>
+            </variable>
+            <variable name="d1">
+              <type>
+                <derived name="DRIVER_1"/>
+              </type>
+            </variable>
+            <variable name="d2">
+              <type>
+                <derived name="DRIVER_1"/>
+              </type>
+            </variable>
+            <variable name="d3">
+              <type>
+                <derived name="DRIVER_1"/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[D0(Set:=set, in:=in0, rst:=rst, toggle_mode:=toggle_mode, timeout:=timeout);
+D1(Set:=set, in:=in1, rst:=rst, toggle_mode:=toggle_mode, timeout:=timeout);
+D2(Set:=set, in:=in2, rst:=rst, toggle_mode:=toggle_mode, timeout:=timeout);
+D3(Set:=set, in:=in3, rst:=rst, toggle_mode:=toggle_mode, timeout:=timeout);
+Q0 := D0.Q;
+Q1 := D1.Q;
+Q2 := D2.Q;
+Q3 := D3.Q;
+
+(* From OSCAT Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[driver_4 is a multi purpose driver.]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="DRIVER_4C" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="IN">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="RST">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="TIMEOUT">
+              <type>
+                <TIME/>
+              </type>
+            </variable>
+            <variable name="SX">
+              <type>
+                <array>
+                  <dimension lower="1" upper="7"/>
+                  <baseType>
+                    <BYTE/>
+                  </baseType>
+                </array>
+              </type>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="SN">
+              <type>
+                <INT/>
+              </type>
+            </variable>
+            <variable name="Q0">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="Q1">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="Q2">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="Q3">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+          </outputVars>
+          <localVars>
+            <variable name="off">
+              <type>
+                <derived name="TON"/>
+              </type>
+            </variable>
+            <variable name="edge">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[IF RST OR off.Q THEN
+	SN := 0;
+ELSIF IN AND NOT edge THEN
+	SN := SN + 1;
+	IF SN > 7 OR SX[SN] = BYTE#0 THEN SN := 0; END_IF;
+END_IF;
+edge := in;
+IF SN > 0 THEN
+	Q0 := (SX[SN] AND BYTE#1) > BYTE#0;
+	Q1 := (SX[SN] AND BYTE#2) > BYTE#0;
+	Q2 := (SX[SN] AND BYTE#4) > BYTE#0;
+	Q3 := (SX[SN] AND BYTE#8) > BYTE#0;
+ELSE
+	Q0 := FALSE;
+	Q1 := FALSE;
+	Q2 := FALSE;
+	Q3 := FALSE;
+END_IF;
+
+(* maximaum timeout *)
+IF timeout > t#0s THEN off(in := SN > 0, PT := Timeout); END_IF;
+  
+  (* From OSCAT Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[driver_4C is a multi purpose driver]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="FLOW_CONTROL" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="IN">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="REQ">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="ENQ">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="RST">
+              <type>
+                <BOOL/>
+              </type>
+              <initialValue>
+                <simpleValue value="FALSE"/>
+              </initialValue>
+            </variable>
+            <variable name="T_AUTO">
+              <type>
+                <TIME/>
+              </type>
+              <initialValue>
+                <simpleValue value="t#1h"/>
+              </initialValue>
+            </variable>
+            <variable name="T_DELAY">
+              <type>
+                <TIME/>
+              </type>
+              <initialValue>
+                <simpleValue value="t#23h"/>
+              </initialValue>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="Q">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="STATUS">
+              <type>
+                <BYTE/>
+              </type>
+            </variable>
+          </outputVars>
+          <localVars>
+            <variable name="timer">
+              <type>
+                <derived name="TP_1D"/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[STATUS := BYTE#100;
+IF RST THEN
+	Q := FALSE;
+	timer(rst := TRUE);
+	timer.RST := FALSE;
+	STATUS := BYTE#103;
+ELSIF ENQ THEN
+	IF IN THEN
+		status := BYTE#101;
+	END_IF;
+	IF REQ THEN
+		(* timer will generate a timed pulse after TP goes high *)
+		timer.PT1 := T_AUTO;
+		timer.PTD := T_DELAY;
+		timer.IN := TRUE;
+		STATUS := BYTE#102;
+	END_IF;
+END_IF;
+
+(* set output and run timer *)
+timer();
+timer.IN := FALSE;
+Q := (IN AND ENQ) OR timer.Q;
+
+(* From OSCAT Library, www.oscat.de *)
+(* TP_1D required *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[FLOW_CONTROL switches a valves depending on the input in]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="FT_PROFILE" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="K">
+              <type>
+                <REAL/>
+              </type>
+              <initialValue>
+                <simpleValue value="1.0"/>
+              </initialValue>
+            </variable>
+            <variable name="O">
+              <type>
+                <REAL/>
+              </type>
+              <initialValue>
+                <simpleValue value="0.0"/>
+              </initialValue>
+            </variable>
+            <variable name="M">
+              <type>
+                <REAL/>
+              </type>
+              <initialValue>
+                <simpleValue value="1.0"/>
+              </initialValue>
+            </variable>
+            <variable name="_E">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="VALUE_0">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="VALUE_1">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="VALUE_2">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="VALUE_3">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="VALUE_10">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="VALUE_11">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="VALUE_12">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="VALUE_13">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="TIME_1">
+              <type>
+                <TIME/>
+              </type>
+            </variable>
+            <variable name="TIME_2">
+              <type>
+                <TIME/>
+              </type>
+            </variable>
+            <variable name="TIME_3">
+              <type>
+                <TIME/>
+              </type>
+            </variable>
+            <variable name="TIME_10">
+              <type>
+                <TIME/>
+              </type>
+            </variable>
+            <variable name="TIME_11">
+              <type>
+                <TIME/>
+              </type>
+            </variable>
+            <variable name="TIME_12">
+              <type>
+                <TIME/>
+              </type>
+            </variable>
+            <variable name="TIME_13">
+              <type>
+                <TIME/>
+              </type>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="Y">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="RUN">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="ET">
+              <type>
+                <TIME/>
+              </type>
+            </variable>
+          </outputVars>
+          <localVars>
+            <variable name="tx">
+              <type>
+                <TIME/>
+              </type>
+            </variable>
+            <variable name="edge">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="state">
+              <type>
+                <INT/>
+              </type>
+            </variable>
+            <variable name="ta">
+              <type>
+                <TIME/>
+              </type>
+            </variable>
+            <variable name="tb">
+              <type>
+                <TIME/>
+              </type>
+            </variable>
+            <variable name="t0">
+              <type>
+                <TIME/>
+              </type>
+            </variable>
+            <variable name="temp">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="va">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="vb">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[tx:= UDINT_TO_TIME(T_PLC_MS(en:=true));
+
+(* determine start condition *)
+IF _E AND NOT edge THEN
+	RUN := TRUE;
+	ET := t#0s;
+	t0 := tx;
+	ta := tx;
+	tb := multime(time_1, M);
+	va := value_0;
+	vb := value_1;
+	temp := value_0;
+	state := 1;
+END_IF;
+edge := _E;
+
+(* generate startup profile *)
+IF run THEN
+	CASE state OF
+		1:	IF tx - ta >= tb THEN
+				ta := ta + tb;
+				tb := multime(time_2 - time_1, M);
+				va := value_1;
+				vb := value_2;
+				temp := value_1;
+				state := 2;
+			ELSE
+				temp := ((vb - va) * TIME_TO_REAL(tx - ta) / TIME_TO_REAL(tb) + va);
+			END_IF;
+		2:	IF tx - ta >= tb THEN
+				ta := ta + tb;
+				tb := multime(time_3 - time_2, M);
+				va := value_2;
+				vb := value_3;
+				temp := value_2;
+				state := 3;
+			ELSE
+				temp := ((vb - va) * TIME_TO_REAL(tx - ta) / TIME_TO_REAL(tb) + va);
+			END_IF;
+		3:	IF tx - ta >= tb THEN
+				ta := ta + tb;
+				tb := multime(time_10 - time_3, M);
+				va := value_3;
+				vb := value_10;
+				temp := value_3;
+				state := 4;
+			ELSE
+				temp := ((vb - va) * TIME_TO_REAL(tx - ta) / TIME_TO_REAL(tb) + va);
+			END_IF;
+		4 :	IF tx - ta >= tb THEN
+				ta := ta + tb;
+				tb := multime(time_11 - time_10, M);
+				va := value_10;
+				vb := value_11;
+				temp := value_10;
+				IF _E THEN state := 5; ELSE state := 6; END_IF;
+			ELSE
+				temp := ((vb - va) * TIME_TO_REAL(tx - ta) / TIME_TO_REAL(tb) + va);
+			END_IF;
+		5:	(* extend the signal while E is true *)
+			IF _E THEN
+				ta := tx;
+			ELSE
+				state := 6;
+			END_IF;
+		6:	IF tx - ta >= tb THEN
+				ta := ta + tb;
+				tb := multime(time_12 - time_11, M);
+				va := value_11;
+				vb := value_12;
+				temp := value_11;
+				state := 7;
+			ELSE
+				temp := ((vb - va) * TIME_TO_REAL(tx - ta) / TIME_TO_REAL(tb) + va);
+			END_IF;
+		7:	IF tx - ta >= tb THEN
+				ta := ta + tb;
+				tb := multime(time_13 - time_12, M);
+				va := value_12;
+				vb := value_13;
+				temp := value_12;
+				state := 8;
+			ELSE
+				temp := ((vb - va) * TIME_TO_REAL(tx - ta) / TIME_TO_REAL(tb) + va);
+			END_IF;
+		8:	IF tx - ta >= tb THEN
+				temp := value_13;
+				run := FALSE;
+			ELSE
+				temp := ((vb - va) * TIME_TO_REAL(tx - ta) / TIME_TO_REAL(tb) + va);
+			END_IF;
+	END_CASE;
+	Y := temp * K + O;
+	ET := tx - t0;
+END_IF;
+
+(* From OSCAT Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[FT_Profile generates an output signal which is defined by values over a time scale]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="INC_DEC" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="CHA">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="CHB">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="RST">
+              <type>
+                <BOOL/>
+              </type>
+              <initialValue>
+                <simpleValue value="0"/>
+              </initialValue>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="DIR">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="CNT">
+              <type>
+                <INT/>
+              </type>
+            </variable>
+          </outputVars>
+          <localVars>
+            <variable name="edgea">
+              <type>
+                <BOOL/>
+              </type>
+              <initialValue>
+                <simpleValue value="0"/>
+              </initialValue>
+            </variable>
+            <variable name="clk">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="clka">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="clkb">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="edgeb">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="axb">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[axb := cha XOR chb;
+
+(* create pulses for channel a *)
+clka := cha XOR edgea;
+edgea := cha;
+
+clkb := chb XOR edgeb;
+edgeb := chb;
+
+(* create pulses for both channels *)
+clk := clka OR clkb;
+
+(* set the direction output *)
+IF axb AND clka THEN dir := TRUE; END_IF;
+IF axb AND clkb THEN dir := FALSE; END_IF;
+
+(* increment or decrement the counter *)
+IF clk AND dir THEN cnt := cnt + 1; END_IF;
+IF clk AND NOT dir THEN cnt := cnt -1; END_IF;
+
+(* reset the counter if rst active *)
+IF rst THEN cnt := 0; END_IF;
+
+(*From OSCAT Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[incremental decoder with quadruple accuracy.]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="INTERLOCK" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="I1">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="I2">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="TL">
+              <type>
+                <TIME/>
+              </type>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="Q1">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="Q2">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+          </outputVars>
+          <localVars>
+            <variable name="T1">
+              <type>
+                <derived name="TOF"/>
+              </type>
+            </variable>
+            <variable name="T2">
+              <type>
+                <derived name="TOF"/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[(* the input signal have a run delay to lockout the other input *)
+T1(IN := I1, PT := TL);
+T2(IN := I2, PT := TL);
+
+Q1 := I1 AND NOT t2.Q;
+Q2 := I2 AND NOT t1.Q;
+
+(*From OSCAT Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[INTERLOCK has two inputs I1 and I2 which drive the corresponding outputs Q1 and Q2]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="INTERLOCK_4" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="I0">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="I1">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="I2">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="I3">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="_E">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="MODE">
+              <type>
+                <INT/>
+              </type>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="OUT">
+              <type>
+                <BYTE/>
+              </type>
+            </variable>
+            <variable name="_TP">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+          </outputVars>
+          <localVars>
+            <variable name="in">
+              <type>
+                <BYTE/>
+              </type>
+            </variable>
+            <variable name="last">
+              <type>
+                <BYTE/>
+              </type>
+            </variable>
+            <variable name="old">
+              <type>
+                <BYTE/>
+              </type>
+            </variable>
+            <variable name="lmode">
+              <type>
+                <INT/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[(* check if enable is active *)
+IF _E THEN
+(* reset all vars when there is a mode change on thy fly *)
+	IF mode <> lmode THEN
+		out := BYTE#0;
+		last := BYTE#0;
+		old := BYTE#0;
+		lmode := mode;
+	END_IF;
+	(* load inputs into in *)
+	in:=BIT_LOAD_B(in,I0,0); (* in.0 *)
+	in:=BIT_LOAD_B(in,I1,1); (* in.1 *)
+	in:=BIT_LOAD_B(in,I2,2); (* in.2 *)
+	in:=BIT_LOAD_B(in,I3,3); (* in.3 *)
+	(* only execute when there is any change *)
+	IF in <> last THEN
+		(* only execute when inputs have chages state *)
+		CASE mode OF
+			0:	(* output directly display inputs as bits in byte out *)
+				out := in;
+
+			1:	(* the input with the highest number will be acepted *)
+				IF    (in AND BYTE#2#00001000) > BYTE#0 (* in.3 *) THEN out := BYTE#8;
+				ELSIF (in AND BYTE#2#00000100) > BYTE#0 (* in.2 *) THEN out := BYTE#4;
+				ELSIF (in AND BYTE#2#00000010) > BYTE#0 (* in.1 *) THEN out := BYTE#2;
+				ELSE out := in;
+				END_IF;
+
+			2:	(* input last pressed will be displayed only *)
+				last := ((in XOR last) AND in);
+				IF    (last AND BYTE#2#00001000) > BYTE#0 (* last.3 *) THEN out := BYTE#8;
+				ELSIF (last AND BYTE#2#00000100) > BYTE#0 (* last.2 *) THEN out := BYTE#4;
+				ELSIF (last AND BYTE#2#00000010) > BYTE#0 (* last.1 *) THEN out := BYTE#2;
+				ELSE out := last;
+				END_IF;
+
+			3:	(* any input active will disable all other inputs *)
+				IF (out AND in) = BYTE#0 THEN
+					IF    (in AND BYTE#2#00001000) > BYTE#0 (* in.3 *) THEN out := BYTE#8;
+					ELSIF (in AND BYTE#2#00000100) > BYTE#0 (* in.2 *) THEN out := BYTE#4;
+					ELSIF (in AND BYTE#2#00000010) > BYTE#0 (* in.1 *) THEN out := BYTE#2;
+					ELSE out := in;
+					END_IF;
+				END_IF;
+
+		END_CASE;
+		last := in;
+	END_IF;
+	_tp := out <> old;
+	old := out;
+ELSE
+	out := BYTE#0;
+	last := BYTE#0;
+	old := BYTE#0;
+	lmode := 0;
+	_tp := FALSE;
+END_IF;
+
+(*From OSCAT Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[INTERLOCK_4 detects one of 4 switches and delivers the number of the switch pressed on the output out]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="MANUAL" pouType="function">
+        <interface>
+          <returnType>
+            <BOOL/>
+          </returnType>
+          <inputVars>
+            <variable name="IN">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="_ON">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="OFF">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[MANUAL := NOT OFF AND (IN OR _ON);
+
+(*From OSCAT Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[MANUAL is a manual override for digital signals]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="MANUAL_1" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="IN">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="MAN">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="M_I">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="SET">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="RST">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="Q">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="STATUS">
+              <type>
+                <BYTE/>
+              </type>
+            </variable>
+          </outputVars>
+          <localVars>
+            <variable name="S_edge">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="_R_edge">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="edge">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[IF NOT man THEN
+	Q := IN;
+	STATUS := BYTE#100;
+	edge := FALSE;
+ELSIF NOT s_edge AND set THEN
+	Q := TRUE;
+	edge := TRUE;
+	status := BYTE#101;
+ELSIF NOT _r_edge AND rst THEN
+	Q := FALSE;
+	edge := TRUE;
+	status := BYTE#102;
+ELSIF NOT edge THEN
+	Q := M_I;
+	status := BYTE#103;
+END_IF;
+
+(* remember levels of manual signals *)
+s_edge := SET;
+_r_edge := RST;
+
+(*From OSCAT Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[MANUAL_1 is a manual override for digital signals.]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="MANUAL_2" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="IN">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="ENA">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="_ON">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="OFF">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="MAN">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="Q">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="STATUS">
+              <type>
+                <BYTE/>
+              </type>
+            </variable>
+            <variable name="STATUS0">
+              <type>
+                <BYTE/>
+              </type>
+            </variable>
+          </outputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[IF ena THEN
+	IF NOT _ON AND NOT OFF THEN
+		Q := IN;
+		STATUS := BYTE#100;
+	ELSIF _on AND NOT off THEN
+		Q := TRUE;
+		STATUS := BYTE#101;
+	ELSIF NOT _on AND off THEN
+		q := FALSE;
+		STATUS := BYTE#102;
+	ELSE
+		Q := MAN;
+		STATUS := BYTE#103;
+	END_IF;
+ELSE
+	Q := FALSE;
+	STATUS := BYTE#104;
+END_IF;
+
+(*From OSCAT Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[MANUAL_2 is a manual override for boolean signals]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="MANUAL_4" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="I0">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="I1">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="I2">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="I3">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="MAN">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="STP">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="M0">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="M1">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="M2">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="M3">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="Q0">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="Q1">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="Q2">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="Q3">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="STATUS">
+              <type>
+                <BYTE/>
+              </type>
+            </variable>
+          </outputVars>
+          <localVars>
+            <variable name="edge">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="pos">
+              <type>
+                <INT/>
+              </type>
+            </variable>
+            <variable name="tog">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[IF man THEN
+	IF NOT TOG THEN
+		Q0 := M0;
+		Q1 := M1;
+		Q2 := M2;
+		Q3 := M3;
+		STATUS := BYTE#101;
+	END_IF;
+	IF STP AND NOT edge THEN
+		tog := TRUE;
+		CASE pos OF
+			0:	Q0 := TRUE;
+				Q1 := FALSE;
+				Q2 := FALSE;
+				Q3 := FALSE;
+				STATUS := BYTE#110;
+			1:	Q0 := FALSE;
+				Q1 := TRUE;
+				Q2 := FALSE;
+				Q3 := FALSE;
+				STATUS := BYTE#111;
+			2:	Q0 := FALSE;
+				Q1 := FALSE;
+				Q2 := TRUE;
+				Q3 := FALSE;
+				STATUS := BYTE#112;
+			3:	Q0 := FALSE;
+				Q1 := FALSE;
+				Q2 := FALSE;
+				Q3 := TRUE;
+				STATUS := BYTE#113;
+		END_CASE;
+		pos := INC(pos,1,3);
+	END_IF;
+ELSE
+	Q0 := I0;
+	Q1 := I1;
+	Q2 := I2;
+	Q3 := I3;
+	STATUS := BYTE#100;
+	tog := FALSE;
+	pos := 0;
+END_IF;
+
+(* remember status of stp *)
+edge := STP;
+
+(*From OSCAT Library, www.oscat.de *)
+(* INC required *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[MANUAL_4 is a manual override for digital signals]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="_BYTE_TO_INT" pouType="function">
+        <interface>
+          <returnType>
+            <INT/>
+          </returnType>
+          <inputVars>
+            <variable name="IN">
+              <type>
+                <BYTE/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[_BYTE_TO_INT := USINT_TO_INT(BYTE_TO_USINT(IN));
+
+(*From OSCAT Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+      </pou>
+      <pou name="SIGNAL" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="IN">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="SIG">
+              <type>
+                <BYTE/>
+              </type>
+            </variable>
+            <variable name="TS">
+              <type>
+                <TIME/>
+              </type>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="Q">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+          </outputVars>
+          <localVars>
+            <variable name="tx">
+              <type>
+                <DWORD/>
+              </type>
+            </variable>
+            <variable name="_step">
+              <type>
+                <BYTE/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[IF in THEN
+	(* an alarm is present read system time first *)
+    tx:= UDINT_TO_DWORD(T_PLC_MS(en:=true));
+
+	(* calculate the step counter which is the lowest 3 bits of (time / ts) *)
+	IF ts > t#0s THEN
+		_step := DWORD_TO_BYTE(UDINT_TO_DWORD(DWORD_TO_UDINT(tx) / TIME_TO_UDINT(ts)) AND DWORD#16#0000_0007);
+	ELSE
+		_step := DWORD_TO_BYTE(SHR(tx,7) AND DWORD#16#0000_0007);
+	END_IF;
+	(* convert the value 0-7 in step into one bit only (bit 0-7) *)
+	_step := SHL(BYTE#1,_BYTE_TO_INT(_step));
+	(* generate the output signal *)
+	Q := (_step AND sig) > BYTE#0;
+ELSE
+	Q := FALSE;
+END_IF;
+
+(*From OSCAT Library, www.oscat.de *)
+(* T_PLC_MS required *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function generates an output signal according to a bit pattern]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="SIGNAL_4" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="IN1">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="IN2">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="IN3">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="IN4">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="TS">
+              <type>
+                <TIME/>
+              </type>
+            </variable>
+            <variable name="S1">
+              <type>
+                <BYTE/>
+              </type>
+              <initialValue>
+                <simpleValue value="2#1111_1111"/>
+              </initialValue>
+            </variable>
+            <variable name="S2">
+              <type>
+                <BYTE/>
+              </type>
+              <initialValue>
+                <simpleValue value="2#1111_0000"/>
+              </initialValue>
+            </variable>
+            <variable name="S3">
+              <type>
+                <BYTE/>
+              </type>
+              <initialValue>
+                <simpleValue value="2#1010_1010"/>
+              </initialValue>
+            </variable>
+            <variable name="S4">
+              <type>
+                <BYTE/>
+              </type>
+              <initialValue>
+                <simpleValue value="2#1010_0000"/>
+              </initialValue>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="Q">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+          </outputVars>
+          <localVars>
+            <variable name="sig">
+              <type>
+                <derived name="SIGNAL"/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[IF in1 THEN
+	sig(in := TRUE, sig := s1, TS := TS);
+ELSIF in2 THEN
+	sig(in := TRUE, sig := s2, TS := TS);
+ELSIF in3 THEN
+	sig(in := TRUE, sig := s3, TS := TS);
+ELSIF in4 THEN
+	sig(in := TRUE, sig := s4, TS := TS);
+ELSE
+	sig(in := FALSE);
+END_IF;
+
+(* set the output *)
+Q := sig.Q;
+
+(*From OSCAT Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function generates one out of 4 signals specified by bit patterns ]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="SRAMP" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="X">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="A_UP">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="A_DN">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="VU_MAX">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="VD_MAX">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="LIMIT_HIGH">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="LIMIT_LOW">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="RST">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="Y">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="V">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </outputVars>
+          <localVars>
+            <variable name="cycle_time">
+              <type>
+                <derived name="TC_S"/>
+              </type>
+            </variable>
+            <variable name="init">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[cycle_time();
+
+(* assure range of inputs *)
+A_up := MAX(0.0,A_UP);
+A_dn := MIN(0.0,A_dn);
+VU_max := MAX(0.0,VU_max);
+VD_max := MIN(0.0,VD_MAX);
+
+(* calculate the output offset *)
+IF rst OR NOT init THEN
+	init := TRUE;
+	Y := 0.0;
+	V := 0.0;
+ELSIF X = Y THEN
+	v := 0.0;
+ELSIF X > Y THEN
+	(* output is too low >> ramp up and brake at the end *)
+	(* accelerate the speed and limit to vu_max *)
+	v := MIN(v + A_UP * cycle_time.TC, vu_max);
+	(* calculate the max speed to be able to brake and select the lowest *)
+	v := MIN(SQRT((Y-X) * 2.0 * A_DN), v);
+	(* calculate the output and obey limits *)
+	y := LIMIT(limit_low, y + MIN(v * cycle_time.TC, X-Y), limit_high);
+ELSIF X < Y THEN
+	(* output is too high >> ramp dn and brake at the end *)
+	(* accelerate the speed and limit to vd_max *)
+	v := MAX(v + A_DN * cycle_time.TC, vd_max);
+	(* calculate the max speed to be able to brake and select the lowest *)
+	v := MAX(-SQRT((Y-X) * 2.0 * A_UP), v);
+	(* calculate the output and obey limits *)
+	y := LIMIT(limit_low, y + MAX(v * cycle_time.TC, X-Y), limit_high);
+END_IF;
+
+(*From OSCAT Library, www.oscat.de *)
+(* TC_S required *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[RAMPS generates output signal which are slew rate and acceleration controlled]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="TUNE" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="SET">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="SU">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="SD">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="RST">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="SS">
+              <type>
+                <REAL/>
+              </type>
+              <initialValue>
+                <simpleValue value="0.1"/>
+              </initialValue>
+            </variable>
+            <variable name="LIMIT_L">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="LIMIT_H">
+              <type>
+                <REAL/>
+              </type>
+              <initialValue>
+                <simpleValue value="100.0"/>
+              </initialValue>
+            </variable>
+            <variable name="RST_VAL">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="SET_VAL">
+              <type>
+                <REAL/>
+              </type>
+              <initialValue>
+                <simpleValue value="100.0"/>
+              </initialValue>
+            </variable>
+            <variable name="T1">
+              <type>
+                <TIME/>
+              </type>
+              <initialValue>
+                <simpleValue value="t#500ms"/>
+              </initialValue>
+            </variable>
+            <variable name="T2">
+              <type>
+                <TIME/>
+              </type>
+              <initialValue>
+                <simpleValue value="t#2s"/>
+              </initialValue>
+            </variable>
+            <variable name="S1">
+              <type>
+                <REAL/>
+              </type>
+              <initialValue>
+                <simpleValue value="2.0"/>
+              </initialValue>
+            </variable>
+            <variable name="S2">
+              <type>
+                <REAL/>
+              </type>
+              <initialValue>
+                <simpleValue value="10.0"/>
+              </initialValue>
+            </variable>
+            <variable name="Y">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+          <localVars>
+            <variable name="tx">
+              <type>
+                <UDINT/>
+              </type>
+            </variable>
+            <variable name="start">
+              <type>
+                <UDINT/>
+              </type>
+            </variable>
+            <variable name="start2">
+              <type>
+                <UDINT/>
+              </type>
+            </variable>
+            <variable name="state">
+              <type>
+                <INT/>
+              </type>
+            </variable>
+            <variable name="in">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="_step">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="speed">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="y_start">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="y_start2">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[tx:= T_PLC_MS(en:=true);
+
+IF rst THEN
+	Y := RST_val;
+	state := 0;
+ELSIF set THEN
+	Y := SET_val;
+	state := 0;
+ELSIF state > 0 THEN
+	(* key has been pushed state machine operating *)
+	(* first read the correct input *)
+	IF state = 1 THEN
+		(* step up *)
+		in := su;
+	ELSE
+		(* step down *)
+		in := sd;
+	END_IF;
+	(* check for single step operation *)
+	IF NOT in AND tx - start <= TIME_TO_UDINT(T1) THEN
+		Y := Y_start + _step;
+		state := 0;
+	(* check if fast ramp needs to be generated *)
+	ELSIF in AND tx - start >= TIME_TO_UDINT(T2) THEN
+		Y := Y_start2 + UDINT_TO_REAL(tx - start2) * s2 / speed;
+	(* check if slow ramp needs to be generated *)
+	ELSIF in AND tx - start >= TIME_TO_UDINT(T1) THEN
+		Y := Y_start + UDINT_TO_REAL(tx - start - TIME_TO_UDINT(T1)) * S1 / speed;
+		start2 := tx;
+		Y_start2 := Y;
+	ELSIF NOT in THEN
+		state := 0;
+	END_IF;
+ELSIF su THEN
+	(* slow step up *)
+	state := 1;
+	start := tx;
+	_step := ss;
+	speed := 1000.0;
+	Y_start := Y;
+ELSIF sd THEN
+	(* slow step down *)
+	state := 2;
+	start := tx;
+	_step := -ss;
+	speed := -1000.0;
+	Y_start := Y;
+END_IF;
+
+(* make sure output does not exceed limits *)
+Y := LIMIT(LIMIT_L, Y, LIMIT_H);
+
+(*From OSCAT Library, www.oscat.de *)
+(* T_PLC_MS required *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[tune generates an output signal which is set by input switches]]></xhtml:p>
+        </documentation>
+      </pou>
+    </pous>
+  </types>
+  <instances>
+    <configurations>
+      <configuration name="Config0">
+        <resource name="Res0">
+          <task name="task0" priority="0" interval="T#20ms">
+            <pouInstance name="instance0" typeName="program0"/>
+          </task>
+        </resource>
+      </configuration>
+    </configurations>
+  </instances>
+</project>

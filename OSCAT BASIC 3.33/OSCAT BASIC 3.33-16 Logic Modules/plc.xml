@@ -1,0 +1,1836 @@
+<?xml version='1.0' encoding='utf-8'?>
+<project xmlns:ns1="http://www.plcopen.org/xml/tc6_0201" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.plcopen.org/xml/tc6_0201">
+  <fileHeader companyName="Unbekannt" productName="Unbenannt" productVersion="1" creationDateTime="2019-09-02T14:55:40"/>
+  <contentHeader name="Unbenannt" modificationDateTime="2019-09-04T15:08:28">
+    <coordinateInfo>
+      <fbd>
+        <scaling x="10" y="10"/>
+      </fbd>
+      <ld>
+        <scaling x="10" y="10"/>
+      </ld>
+      <sfc>
+        <scaling x="10" y="10"/>
+      </sfc>
+    </coordinateInfo>
+  </contentHeader>
+  <types>
+    <dataTypes/>
+    <pous>
+      <pou name="program0" pouType="program">
+        <interface>
+          <localVars>
+            <variable name="LocalVar0">
+              <type>
+                <DINT/>
+              </type>
+            </variable>
+            <variable name="LocalVar1">
+              <type>
+                <DINT/>
+              </type>
+            </variable>
+            <variable name="LocalVar2">
+              <type>
+                <DINT/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <FBD>
+            <block localId="1" typeName="ADD" executionOrderId="0" height="60" width="70">
+              <position x="570" y="100"/>
+              <inputVariables>
+                <variable formalParameter="IN1">
+                  <connectionPointIn>
+                    <relPosition x="0" y="30"/>
+                    <connection refLocalId="2">
+                      <position x="570" y="130"/>
+                      <position x="510" y="130"/>
+                    </connection>
+                  </connectionPointIn>
+                </variable>
+                <variable formalParameter="IN2">
+                  <connectionPointIn>
+                    <relPosition x="0" y="50"/>
+                    <connection refLocalId="3">
+                      <position x="570" y="150"/>
+                      <position x="510" y="150"/>
+                    </connection>
+                  </connectionPointIn>
+                </variable>
+              </inputVariables>
+              <inOutVariables/>
+              <outputVariables>
+                <variable formalParameter="OUT">
+                  <connectionPointOut>
+                    <relPosition x="70" y="30"/>
+                  </connectionPointOut>
+                </variable>
+              </outputVariables>
+            </block>
+            <inVariable localId="2" executionOrderId="0" height="30" width="90" negated="false">
+              <position x="420" y="110"/>
+              <connectionPointOut>
+                <relPosition x="90" y="20"/>
+              </connectionPointOut>
+              <expression>LocalVar0</expression>
+            </inVariable>
+            <inVariable localId="3" executionOrderId="0" height="30" width="90" negated="false">
+              <position x="420" y="140"/>
+              <connectionPointOut>
+                <relPosition x="90" y="10"/>
+              </connectionPointOut>
+              <expression>LocalVar1</expression>
+            </inVariable>
+            <outVariable localId="4" executionOrderId="0" height="30" width="90" negated="false">
+              <position x="670" y="120"/>
+              <connectionPointIn>
+                <relPosition x="0" y="10"/>
+                <connection refLocalId="1" formalParameter="OUT">
+                  <position x="670" y="130"/>
+                  <position x="640" y="130"/>
+                </connection>
+              </connectionPointIn>
+              <expression>LocalVar2</expression>
+            </outVariable>
+          </FBD>
+        </body>
+      </pou>
+      <pou name="BIT_OF_DWORD" pouType="function">
+        <interface>
+          <returnType>
+            <BOOL/>
+          </returnType>
+          <inputVars>
+            <variable name="IN">
+              <type>
+                <DWORD/>
+              </type>
+            </variable>
+            <variable name="N">
+              <type>
+                <INT/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[BIT_OF_DWORD := (SHR(in,N) AND 16#00000001) > 0;
+
+(* From Oscat Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function extracts a single bit from the nth position from right (right is lowest bit the lowest Bit (Bit0 from in) is selected with N=.]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="_BYTE_TO_INT" pouType="function">
+        <interface>
+          <returnType>
+            <INT/>
+          </returnType>
+          <inputVars>
+            <variable name="IN">
+              <type>
+                <BYTE/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[_BYTE_TO_INT := USINT_TO_INT(BYTE_TO_USINT(IN));
+
+(*From OSCAT Library, www.oscat.de*)]]></xhtml:p>
+          </ST>
+        </body>
+      </pou>
+      <pou name="BCDC_TO_INT" pouType="function">
+        <interface>
+          <returnType>
+            <INT/>
+          </returnType>
+          <inputVars>
+            <variable name="IN">
+              <type>
+                <BYTE/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[BCDC_TO_INT := _BYTE_TO_INT(in AND BYTE#16#0F) + (_BYTE_TO_INT(SHR(in,4)) * 10);
+
+(*From OSCAT Library, www.oscat.de*)
+(*_BYTE_TO_INT required*)]]></xhtml:p>
+          </ST>
+        </body>
+      </pou>
+      <pou name="BIT_COUNT" pouType="function">
+        <interface>
+          <returnType>
+            <INT/>
+          </returnType>
+          <inputVars>
+            <variable name="IN">
+              <type>
+                <DWORD/>
+              </type>
+            </variable>
+          </inputVars>
+          <localVars>
+            <variable name="in_temp">
+              <type>
+                <DWORD/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[in_temp := IN;
+WHILE in_temp > DWORD#0 DO
+	IF (in_temp AND DWORD#16#00000001) > DWORD#0 THEN Bit_Count := Bit_Count +1; END_IF;
+	in_temp := SHR(in_temp,1);
+END_WHILE;
+
+(*From OSCAT Library, www.oscat.de*)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[BIT_COUNT counts the amount True of bits in a dword.]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="BIT_LOAD_B" pouType="function">
+        <interface>
+          <returnType>
+            <BYTE/>
+          </returnType>
+          <inputVars>
+            <variable name="IN">
+              <type>
+                <BYTE/>
+              </type>
+            </variable>
+            <variable name="VAL">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="POS">
+              <type>
+                <INT/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[IF VAL THEN
+	BIT_LOAD_B := in OR SHL(BYTE#1,pos);
+ELSE
+	BIT_LOAD_B := in AND (NOT SHL(BYTE#1,pos));
+END_IF;
+
+(*From OSCAT Library, www.oscat.de*)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function loads a bit into a byte at position pos.]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="BIT_LOAD_B2" pouType="function">
+        <interface>
+          <returnType>
+            <BYTE/>
+          </returnType>
+          <inputVars>
+            <variable name="I">
+              <type>
+                <BYTE/>
+              </type>
+            </variable>
+            <variable name="_D">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="P">
+              <type>
+                <INT/>
+              </type>
+            </variable>
+            <variable name="N">
+              <type>
+                <INT/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[IF _D THEN
+	BIT_LOAD_B2 := ROL(SHR(BYTE#255, 8 - N) OR ROR(I, P), P);
+ELSE
+	BIT_LOAD_B2 := ROL(SHL(BYTE#255, N) AND ROR(I, P), P);
+END_IF;
+
+(*From OSCAT Library, www.oscat.de*)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function loads N bits of D at pos P in Byte I]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="BIT_LOAD_DW" pouType="function">
+        <interface>
+          <returnType>
+            <DWORD/>
+          </returnType>
+          <inputVars>
+            <variable name="IN">
+              <type>
+                <DWORD/>
+              </type>
+            </variable>
+            <variable name="VAL">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="POS">
+              <type>
+                <INT/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[IF val THEN
+	BIT_LOAD_DW := in OR SHL(DWORD#1,pos);
+ELSE
+	BIT_LOAD_DW := in AND (NOT SHL(DWORD#1,pos));
+END_IF;
+
+(*From OSCAT Library, www.oscat.de*)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function loads a bit into a DWord at position pos]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="BIT_LOAD_DW2" pouType="function">
+        <interface>
+          <returnType>
+            <DWORD/>
+          </returnType>
+          <inputVars>
+            <variable name="I">
+              <type>
+                <DWORD/>
+              </type>
+            </variable>
+            <variable name="_D">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="P">
+              <type>
+                <INT/>
+              </type>
+            </variable>
+            <variable name="N">
+              <type>
+                <INT/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[IF _D THEN
+	BIT_LOAD_DW2 := ROL(SHR(DWORD#16#FFFFFFFF, 32 - N) OR ROR(I, P), P);
+ELSE
+	BIT_LOAD_DW2 := ROL(SHL(DWORD#16#FFFFFFFF, N) AND ROR(I, P), P);
+END_IF;
+
+(*From OSCAT Library, www.oscat.de*)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function loads N bits of D at pos P in DWORD I]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="BIT_LOAD_W" pouType="function">
+        <interface>
+          <returnType>
+            <WORD/>
+          </returnType>
+          <inputVars>
+            <variable name="IN">
+              <type>
+                <WORD/>
+              </type>
+            </variable>
+            <variable name="VAL">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="POS">
+              <type>
+                <INT/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[IF VAL THEN
+	BIT_LOAD_W := in OR SHL(WORD#1,pos);
+ELSE
+	BIT_LOAD_W := in AND (NOT SHL(WORD#1,pos));
+END_IF;
+
+(*From OSCAT Library, www.oscat.de*)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function loads a bit into a Word at position pos]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="BIT_LOAD_W2" pouType="function">
+        <interface>
+          <returnType>
+            <WORD/>
+          </returnType>
+          <inputVars>
+            <variable name="I">
+              <type>
+                <WORD/>
+              </type>
+            </variable>
+            <variable name="_D">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="P">
+              <type>
+                <INT/>
+              </type>
+            </variable>
+            <variable name="N">
+              <type>
+                <INT/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[IF _D THEN
+	BIT_LOAD_W2 := ROL(SHR(WORD#16#FFFF, 16 - N) OR ROR(I, P), P);
+ELSE
+	BIT_LOAD_W2 := ROL(SHL(WORD#16#FFFF, N) AND ROR(I, P), P);
+END_IF;
+
+(*From OSCAT Library, www.oscat.de*)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function loads N bits of D at pos P in WORD I]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="BIT_TOGGLE_B" pouType="function">
+        <interface>
+          <returnType>
+            <BYTE/>
+          </returnType>
+          <inputVars>
+            <variable name="IN">
+              <type>
+                <BYTE/>
+              </type>
+            </variable>
+            <variable name="POS">
+              <type>
+                <INT/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[BIT_TOGGLE_B := SHL(BYTE#1, POS) XOR IN;
+
+(*From OSCAT Library, www.oscat.de*)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function toggles a bit of a BYTE at position pos.]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="BIT_TOGGLE_DW" pouType="function">
+        <interface>
+          <returnType>
+            <DWORD/>
+          </returnType>
+          <inputVars>
+            <variable name="IN">
+              <type>
+                <DWORD/>
+              </type>
+            </variable>
+            <variable name="POS">
+              <type>
+                <INT/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[BIT_TOGGLE_DW := SHL(DWORD#1, POS) XOR IN;
+
+(*From OSCAT Library, www.oscat.de*)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function toggles a bit of a WORD at position pos.]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="BIT_TOGGLE_W" pouType="function">
+        <interface>
+          <returnType>
+            <WORD/>
+          </returnType>
+          <inputVars>
+            <variable name="IN">
+              <type>
+                <WORD/>
+              </type>
+            </variable>
+            <variable name="POS">
+              <type>
+                <INT/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[BIT_TOGGLE_W := SHL(WORD#1, POS) XOR IN;
+
+(*From OSCAT Library, www.oscat.de*)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function toggles a bit of a WORD at position pos.]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="BYTE_OF_BIT" pouType="function">
+        <interface>
+          <returnType>
+            <BYTE/>
+          </returnType>
+          <inputVars>
+            <variable name="B0">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="B1">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="B2">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="B3">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="B4">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="B5">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="B6">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="B7">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[Byte_of_bit := SHL(SHL(SHL(SHL(SHL(SHL(SHL(BOOL_TO_BYTE(B7),1) OR BOOL_TO_BYTE(B6),1)
+ OR BOOL_TO_BYTE(B5),1) OR BOOL_TO_BYTE(B4),1) OR BOOL_TO_BYTE(B3),1) OR BOOL_TO_BYTE(B2),1)
+ OR BOOL_TO_BYTE(B1),1) OR BOOL_TO_BYTE(B0);
+
+(*From OSCAT Library, www.oscat.de*)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function creates a byte from 8 individual bits]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="BYTE_OF_DWORD" pouType="function">
+        <interface>
+          <returnType>
+            <BYTE/>
+          </returnType>
+          <inputVars>
+            <variable name="IN">
+              <type>
+                <DWORD/>
+              </type>
+            </variable>
+            <variable name="N">
+              <type>
+                <BYTE/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[BYTE_OF_DWORD := DWORD_TO_BYTE(SHR(in,_BYTE_TO_INT(SHL(n,3))));
+
+(*From OSCAT Library, www.oscat.de*)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function extracts a single byte from the nth position from right]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="BYTE_TO_BITS" pouType="function">
+        <interface>
+          <returnType>
+            <BOOL/>
+          </returnType>
+          <localVars>
+            <variable name="IN">
+              <type>
+                <BYTE/>
+              </type>
+            </variable>
+          </localVars>
+          <outputVars>
+            <variable name="B0">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="B1">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="B2">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="B3">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="B4">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="B5">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="B6">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="B7">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+          </outputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[B0 := BIT_OF_DWORD(BYTE_TO_DWORD(IN),0); (* IN.X0 *)
+B1 := BIT_OF_DWORD(BYTE_TO_DWORD(IN),1); (* IN.X1 *)
+B2 := BIT_OF_DWORD(BYTE_TO_DWORD(IN),2); (* IN.X2 *)
+B3 := BIT_OF_DWORD(BYTE_TO_DWORD(IN),3); (* IN.X3 *)
+B4 := BIT_OF_DWORD(BYTE_TO_DWORD(IN),4); (* IN.X4 *)
+B5 := BIT_OF_DWORD(BYTE_TO_DWORD(IN),5); (* IN.X5 *)
+B6 := BIT_OF_DWORD(BYTE_TO_DWORD(IN),6); (* IN.X6 *)
+B7 := BIT_OF_DWORD(BYTE_TO_DWORD(IN),7); (* IN.X7 *)
+
+(*From OSCAT Library, www.oscat.de*)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this Function Block extracts the 8 Bits from a byte]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="BYTE_TO_GRAY" pouType="function">
+        <interface>
+          <returnType>
+            <BYTE/>
+          </returnType>
+          <inputVars>
+            <variable name="IN">
+              <type>
+                <BYTE/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[BYTE_TO_GRAY := IN XOR SHR(IN,1);
+
+(*From OSCAT Library, www.oscat.de*)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function converts a binary to gray code]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="CHECK_PARITY" pouType="function">
+        <interface>
+          <returnType>
+            <BOOL/>
+          </returnType>
+          <inputVars>
+            <variable name="IN">
+              <type>
+                <DWORD/>
+              </type>
+            </variable>
+            <variable name="P">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+          </inputVars>
+          <localVars>
+            <variable name="IN2">
+              <type>
+                <DWORD/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[in2:=in;
+check_parity := NOT p;
+WHILE in2 > DWORD#0 DO
+	check_parity := check_parity XOR BIT_OF_DWORD(in2,0) XOR BIT_OF_DWORD(in2,1) XOR BIT_OF_DWORD(in2,2) XOR BIT_OF_DWORD(in2,3);
+	in2 := SHR(in2,4);
+END_WHILE;
+
+(* Fromm Oscat Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function checks for an even partity for a dword and partity bit]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="CRC_GEN" pouType="functionBlock">
+        <interface>
+          <inOutVars>
+            <variable name="PT">
+              <type>
+                <array>
+                  <dimension lower="0" upper="249"/>
+                  <baseType>
+                    <BYTE/>
+                  </baseType>
+                </array>
+              </type>
+            </variable>
+          </inOutVars>
+          <inputVars>
+            <variable name="SIZE">
+              <type>
+                <UINT/>
+              </type>
+            </variable>
+            <variable name="PL">
+              <type>
+                <UINT/>
+              </type>
+            </variable>
+            <variable name="PN">
+              <type>
+                <DWORD/>
+              </type>
+            </variable>
+            <variable name="INIT">
+              <type>
+                <DWORD/>
+              </type>
+            </variable>
+            <variable name="REV_IN">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="REV_OUT">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="XOR_OUT">
+              <type>
+                <DWORD/>
+              </type>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="_CRC_GEN">
+              <type>
+                <DWORD/>
+              </type>
+            </variable>
+          </outputVars>
+          <localVars>
+            <variable name="pos">
+              <type>
+                <INT/>
+              </type>
+            </variable>
+            <variable name="shift">
+              <type>
+                <INT/>
+              </type>
+            </variable>
+            <variable name="bits">
+              <type>
+                <INT/>
+              </type>
+            </variable>
+            <variable name="dx">
+              <type>
+                <BYTE/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[shift := 32 - UINT_TO_INT(PL);
+PN := SHL(PN, shift);
+
+(* load first 4 bytes into register minimum message size is 4 bytes
+	for smaller messages fill with 0#s at the beginning*)
+FOR pos := 0 TO 3 DO
+	IF REV_IN THEN _CRC_GEN := SHL(_CRC_GEN, 8) OR BYTE_TO_DWORD(REVERSE(PT[pos])); ELSE _CRC_GEN := SHL(_CRC_GEN, 8) OR BYTE_TO_DWORD(PT[pos]); END_IF;
+END_FOR;
+pos := 4;
+
+(* xor with init value *)
+_CRC_GEN := _CRC_GEN XOR SHL(init, shift);
+
+(* calculate CRC for each byte *)
+WHILE pos < UINT_TO_INT(size) DO
+	IF REV_IN THEN DX := REVERSE(PT[pos]); ELSE DX := PT[pos]; END_IF;
+	pos := pos + 1;
+	(* crc calculation for one byte *)
+	FOR bits := 0 TO 7 DO
+		IF (_CRC_GEN AND DWORD#16#8000_0000) > DWORD#0 THEN (* CRC_GEN.31 *)
+			_CRC_GEN := (SHL(_CRC_GEN, 1) OR BOOL_TO_DWORD((DX AND BYTE#16#80) > BYTE#0)) XOR PN; (* DX.7 *)
+		ELSE
+			_CRC_GEN := SHL(_CRC_GEN, 1) OR BOOL_TO_DWORD((DX AND BYTE#16#80) > BYTE#0); (* DX.7 *)
+		END_IF;
+		dx := SHL(dx, 1);
+	END_FOR;
+END_WHILE;
+
+(* all bytes are processed, need to finish the registers 32 bits *)
+FOR bits := 0 TO 31 DO
+	IF (_CRC_GEN AND DWORD#16#8000_0000) > DWORD#0 THEN (* CRC_GEN.31 *)
+		_CRC_GEN := (SHL(_CRC_GEN, 1) OR BOOL_TO_DWORD((DX AND BYTE#16#80) > BYTE#0)) XOR PN; (* DX.7 *)
+	ELSE
+		_CRC_GEN := SHL(_CRC_GEN, 1) OR BOOL_TO_DWORD((DX AND BYTE#16#80) > BYTE#0); (* DX.7 *)
+	END_IF;
+END_FOR;
+
+(* final XOR *)
+_CRC_GEN := SHR(_CRC_GEN, shift) XOR XOR_OUT;
+
+(* reverse the crc_out put if necessary *)
+IF REV_OUT THEN _CRC_GEN := REFLECT(_CRC_GEN, UINT_TO_INT(PL)); END_IF;
+
+
+(* typical crc polynoms
+
+CRC-4-ITU 			x4 + x + 1 					(ITU G.704, p. 12) 	0x3 or 0xC (0x9)
+CRC-5-ITU 			x5 + x4 + x2 + 1 			(ITU G.704, p. 9) 	0x15 or 0x15 (0x0B) Bluetooth
+CRC-5-USB 			x5 + x2 + 1 				(use: USB token packets) 	0x05 or 0x14 (0x9)
+CRC-6-ITU 			x6 + x + 1 					(ITU G.704, p. 3) 	0x03 or 0x30 (0x21)
+CRC-7 				x7 + x3 + 1 				(use: telecom systems, MMC) 	0x09 or 0x48 (0x11)
+CRC-8-ATM 			x8 + x2 + x + 1 				(use: ATM HEC) 	0x07 or 0xE0 (0xC1)
+CRC-8-CCITT 		x8 + x7 + x3 + x2 + 1 		(use: 1-Wire bus) 	0x8D or 0xB1 (0x63)
+CRC-8-Dallas/Maxim 	x8 + x5 + x4 + 1 			(use: 1-Wire bus) 	0x31 or 0x8C (0x19)
+CRC-8 				x8 + x7 + x6 + x4 + x2 + 1 	0xD5 or 0xAB (0x57)
+CRC-8-SAE J1850 	x8 + x4 + x3 + x2 + 1 		0x1D or 0xB8
+CRC-10 				x10 + x9 + x5 + x4 + x + 1 	0x233 or 0x331 (0x263)
+CRC-12 				x12 + x11 + x3 + x2 + x + 1 (use: telecom systems) 	0x80F or 0xF01 (0xE03)
+CRC-15-CAN 			x15 + x14 + x10 + x8 + x7 + x4 + x3 + 1 	0x4599 or 0x4CD1 (0x19A3)
+CRC-16-Fletcher 	Not a CRC; see Fletcher's checksum 	Used in Adler-32 A & B CRCs
+CRC-16-CCITT 	x16 + x12 + x5 + 1 (XMODEM,X.25, V.41, Bluetooth, PPP, IrDA; known as "CRC-CCITT") 	0x1021 or 0x8408 (0x0811)
+CRC-16-IBM 	x16 + x15 + x2 + 1 (USB, many others; also known as "CRC-16") 	0x8005 or 0xA001 (0x4003)
+CRC-24-Radix-64 	x24 + x23 + x18 + x17 + x14 + x11 + x10 + x7 + x6 + x5 + x4 + x3 + x + 1 	0x864CFB or 0xDF3261 (0xBE64C3)
+CRC-32-Adler 	Not a CRC; see Adler-32 	See Adler-32
+CRC-32-MPEG2 	x32 + x26 + x23 + x22 + x16 + x12 + x11 + x10 + x8 + x7 + x5 + x4 + x2 + x + 1 	0x04C11DB7 or 0xEDB88320 (0xDB710641) Also used in IEEE 802.3
+CRC-32-IEEE 802.3 	x32 + x26 + x23 + x22 + x16 + x12 + x11 + x10 + x8 + x7 + x5 + x4 + x2 + x + 1 (V.42) 	0x04C11DB7 or 0xEDB88320 (0xDB710641)
+CRC-32C (Castagnoli) 	x32 + x28 + x27 + x26 + x25 + x23 + x22 + x20 + x19 + x18 + x14 + x13 + x11 + x10 + x9 + x8 + x6 + 1 	0x1EDC6F41 or 0x82F63B78 (0x05EC76F1)
+CRC-64-ISO 	x64 + x4 + x3 + x + 1 (use: ISO 3309) 	0x000000000000001B or 0xD800000000000000 (0xB000000000000001)
+CRC-64-ECMA-182 	x64 + x62 + x57 + x55 + x54 + x53 + x52 + x47 + x46 + x45 + x40 + x39 + x38 + x37 + x35 + x33 + x32 + x31 + x29 + x27 + x24 + x23 + x22 + x21 + x19 + x17 + x13 + x12 + x10 + x9 + x7 + x4 + x + 1
+(as described in ECMA-182 p.63) 	0x42F0E1EBA9EA3693 or 0xC96C5795D7870F42 (0x92D8AF2BAF0E1E85)
+*)
+]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[CRC_GEN generates a CRC checksum from a block of data ]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="REFLECT" pouType="function">
+        <interface>
+          <returnType>
+            <DWORD/>
+          </returnType>
+          <inputVars>
+            <variable name="DI">
+              <type>
+                <DWORD/>
+              </type>
+            </variable>
+            <variable name="L">
+              <type>
+                <INT/>
+              </type>
+            </variable>
+          </inputVars>
+          <localVars>
+            <variable name="i">
+              <type>
+                <INT/>
+              </type>
+            </variable>
+            <variable name="_d">
+              <type>
+                <DWORD/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[_d := DI;
+FOR i := 1 TO L DO
+	REFLECT := SHL(REFLECT, 1) OR BOOL_TO_DWORD((_d AND DWORD#2#0000_0001) > DWORD#0); (* D.0 *)
+	_d := SHR(_d, 1);
+END_FOR;
+REFLECT := REFLECT OR SHL(_d, L);
+
+
+(* Fromm Oscat Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[This function reverses the specified amount of bits from bit 0 to bit n within a dword  while L specifies the amount of Bits to be reflected]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="REVERSE" pouType="function">
+        <interface>
+          <returnType>
+            <BYTE/>
+          </returnType>
+          <inputVars>
+            <variable name="IN">
+              <type>
+                <BYTE/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[reverse := SHL(in,7) OR SHR(in,7) OR (ROR(in,3) AND BYTE#2#01000100) OR (ROL(in,3) AND BYTE#2#00100010)
+	OR (SHL(in,1) AND BYTE#2#00010000) OR (SHR(in,1) AND BYTE#2#00001000);
+
+
+(* Fromm Oscat Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[This function reverses the bits of a byte so that after execution bit 7 is at bit 0 location and so forth]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="DEC_2" pouType="function">
+        <interface>
+          <returnType>
+            <BOOL/>
+          </returnType>
+          <inputVars>
+            <variable name="DI">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="A">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="Q0">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="Q1">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+          </outputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[Q0 := DI AND NOT A;
+Q1 := DI AND A;
+
+(* Fromm Oscat Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[a bit input will be decoded to the two outputs Q0 or Q1 dependent on the value of A]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="DEC_4" pouType="function">
+        <interface>
+          <returnType>
+            <BOOL/>
+          </returnType>
+          <inputVars>
+            <variable name="DI">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="A0">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="A1">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="Q0">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="Q1">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="Q2">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="Q3">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+          </outputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[Q0 := DI AND NOT A0 AND NOT A1;
+Q1 := DI AND A0 AND NOT A1;
+Q2 := DI AND NOT A0 AND A1;
+Q3 := DI AND A0 AND A1;
+
+(* Fromm Oscat Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[a bit input will be decoded to one of the 4 outputs dependent on the Adress on A0 and A1]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="DEC_8" pouType="function">
+        <interface>
+          <returnType>
+            <BOOL/>
+          </returnType>
+          <inputVars>
+            <variable name="DI">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="A0">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="A1">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="A2">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="Q0">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="Q1">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="Q2">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="Q3">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="Q4">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="Q5">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="Q6">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="Q7">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+          </outputVars>
+          <localVars>
+            <variable name="X">
+              <type>
+                <BYTE/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[X:=BIT_LOAD_B(X,A0,0); (* X.0 := A0; *)
+X:=BIT_LOAD_B(X,A1,1); (* X.1 := A1; *)
+X:=BIT_LOAD_B(X,A2,2); (* X.2 := A2; *)
+
+Q0 := FALSE;
+Q1 := FALSE;
+Q2 := FALSE;
+Q3 := FALSE;
+Q4 := FALSE;
+Q5 := FALSE;
+Q6 := FALSE;
+Q7 := FALSE;
+
+CASE _BYTE_TO_INT(X) OF
+	0 : Q0 := DI;
+	1 : Q1 := DI;
+	2 : Q2 := DI;
+	3 : Q3 := DI;
+	4 : Q4 := DI;
+	5 : Q5 := DI;
+	6 : Q6 := DI;
+	7 : Q7 := DI;
+END_CASE;
+
+(* Fromm Oscat Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[a bit input will be decoded to one of the 8 outputs dependent on the Adress on A0, A1 and A2]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="DWORD_OF_BYTE" pouType="function">
+        <interface>
+          <returnType>
+            <DWORD/>
+          </returnType>
+          <inputVars>
+            <variable name="B0">
+              <type>
+                <BYTE/>
+              </type>
+            </variable>
+            <variable name="B1">
+              <type>
+                <BYTE/>
+              </type>
+            </variable>
+            <variable name="B2">
+              <type>
+                <BYTE/>
+              </type>
+            </variable>
+            <variable name="B3">
+              <type>
+                <BYTE/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[DWORD_OF_BYTE := SHL(SHL(SHL(BYTE_TO_DWORD(B3),8) OR BYTE_TO_DWORD(B2),8) OR BYTE_TO_DWORD(B1),8) OR BYTE_TO_DWORD(B0);
+
+(* Fromm Oscat Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function creates a Dword from 4 individual bytes]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="DWORD_OF_WORD" pouType="function">
+        <interface>
+          <returnType>
+            <DWORD/>
+          </returnType>
+          <inputVars>
+            <variable name="W0">
+              <type>
+                <WORD/>
+              </type>
+            </variable>
+            <variable name="W1">
+              <type>
+                <WORD/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[DWORD_OF_WORD := SHL(WORD_TO_DWORD(W1),16) OR WORD_TO_DWORD(W0);
+
+(* Fromm Oscat Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function creates a Dword from 2 individual Words]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="GRAY_TO_BYTE" pouType="function">
+        <interface>
+          <returnType>
+            <BYTE/>
+          </returnType>
+          <inputVars>
+            <variable name="IN">
+              <type>
+                <BYTE/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[GRAY_TO_BYTE := SHR(IN,4) XOR IN;
+GRAY_TO_BYTE := SHR(GRAY_TO_BYTE,2) XOR GRAY_TO_BYTE;
+GRAY_TO_BYTE := SHR(GRAY_TO_BYTE,1) XOR GRAY_TO_BYTE;
+
+(* Fromm Oscat Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function converts a gray code into binary]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="INT_TO_BCDC" pouType="function">
+        <interface>
+          <returnType>
+            <BYTE/>
+          </returnType>
+          <inputVars>
+            <variable name="IN">
+              <type>
+                <INT/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[INT_TO_BCDC := SHL(INT_TO_BYTE(IN / INT#10),4) OR INT_TO_BYTE(in MOD INT#10);
+
+(* Fromm Oscat Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function converts an integer into a two digit bcd number]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="MATRIX" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="X1">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="X2">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="X3">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="X4">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="X5">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="RELEASE">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="CODE">
+              <type>
+                <BYTE/>
+              </type>
+            </variable>
+            <variable name="_TP">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="Y1">
+              <type>
+                <BOOL/>
+              </type>
+              <initialValue>
+                <simpleValue value="TRUE"/>
+              </initialValue>
+            </variable>
+            <variable name="Y2">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="Y3">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="Y4">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+          </outputVars>
+          <localVars>
+            <variable name="line">
+              <type>
+                <BYTE/>
+              </type>
+            </variable>
+            <variable name="x">
+              <type>
+                <array>
+                  <dimension lower="0" upper="3"/>
+                  <baseType>
+                    <BYTE/>
+                  </baseType>
+                </array>
+              </type>
+            </variable>
+            <variable name="l">
+              <type>
+                <array>
+                  <dimension lower="0" upper="3"/>
+                  <baseType>
+                    <BYTE/>
+                  </baseType>
+                </array>
+              </type>
+            </variable>
+            <variable name="i">
+              <type>
+                <INT/>
+              </type>
+            </variable>
+            <variable name="temp">
+              <type>
+                <BYTE/>
+              </type>
+            </variable>
+            <variable name="temp2">
+              <type>
+                <BYTE/>
+              </type>
+            </variable>
+            <variable name="L_temp">
+              <type>
+                <BYTE/>
+              </type>
+            </variable>
+            <variable name="temp_bit">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="in_temp">
+              <type>
+                <INT/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[_TP := FALSE;
+code := BYTE#0;
+
+(* read scan lines *)
+in_temp := _BYTE_TO_INT(line);
+temp := X[in_temp];  (* X[LINE] umkopieren *)
+
+temp:=BIT_LOAD_B(temp,X1,0); (* X[line].0 := X1; *)
+temp:=BIT_LOAD_B(temp,X2,1); (* X[line].1 := X2; *)
+temp:=BIT_LOAD_B(temp,X3,2); (* X[line].2 := X3; *)
+temp:=BIT_LOAD_B(temp,X4,3); (* X[line].3 := X4; *)
+temp:=BIT_LOAD_B(temp,X5,4); (* X[line].4 := X5; *)
+
+X[in_temp] := temp; (* X[LINE] zurückkopieren *)
+
+(* compare for change *)
+FOR i := 0 TO 3 DO
+	IF X[i] <> L[i] THEN
+		(* scan line information has changed code need to be found and generated *)
+		temp   := x[i] XOR L[i];
+        temp2  := X[i];
+        L_temp := L[i];
+
+        IF BIT_OF_DWORD(BYTE_TO_DWORD(temp),0) THEN (* temp.l *)
+			code := BYTE#1;
+            temp_bit := BIT_OF_DWORD(BYTE_TO_DWORD(temp2),0);   (* X[i].l *)
+            code := BIT_LOAD_B(code,temp_bit,7);     			(* code.X7 *)
+            L_temp := BIT_LOAD_B(L_temp,temp_bit,0); 			(* L[i].l *)
+		ELSIF BIT_OF_DWORD(BYTE_TO_DWORD(temp),1) THEN          (* temp.X1 *)
+			code := BYTE#2;
+            temp_bit := BIT_OF_DWORD(BYTE_TO_DWORD(temp2),1);   (* X[i].X1 *)
+            code := BIT_LOAD_B(code,temp_bit,7);     			(* code.X7 *)
+            L_temp := BIT_LOAD_B(L_temp,temp_bit,1); 			(* L[i].X1 *)
+		ELSIF BIT_OF_DWORD(BYTE_TO_DWORD(temp),2) THEN          (* temp.X2 *)
+			code := BYTE#3;
+            temp_bit := BIT_OF_DWORD(BYTE_TO_DWORD(temp2),2);   (* X[i].X2 *)
+            code := BIT_LOAD_B(code,temp_bit,7);     			(* code.X7 *)
+            L_temp := BIT_LOAD_B(L_temp,temp_bit,2); 			(* L[i].X2 *)
+		ELSIF BIT_OF_DWORD(BYTE_TO_DWORD(temp),3) THEN          (* temp.X3 *)
+			code := BYTE#4;
+            temp_bit := BIT_OF_DWORD(BYTE_TO_DWORD(temp2),3);   (* X[i].X3 *)
+            code := BIT_LOAD_B(code,temp_bit,7);     			(* code.X7 *)
+            L_temp := BIT_LOAD_B(L_temp,temp_bit,3); 			(* L[i].X3 *)
+		ELSIF BIT_OF_DWORD(BYTE_TO_DWORD(temp),4) THEN          (* temp.X4 *)
+			code := BYTE#5;
+            temp_bit := BIT_OF_DWORD(BYTE_TO_DWORD(temp2),4);   (* X[i].X4 *)
+            code := BIT_LOAD_B(code,temp_bit,7);     			(* code.X7 *)
+            L_temp := BIT_LOAD_B(L_temp,temp_bit,4); 			(* L[i].X4 *)
+		END_IF;
+        L[i] := L_temp;
+		_TP := TRUE;
+        code := (code AND BYTE#2#1000_1111) OR SHL(LINE AND BYTE#2#0000_0111,4);
+        (* obere zeile enspricht: Code.X4 := Line.l; /  Code.X5 := Line.X1; / Code.RELEASE := Line.X2; *)
+
+		(* check if release codes need to be killed *)
+		IF NOT release AND code < BYTE#127 THEN
+			code := BYTE#0;
+			_TP := FALSE;
+		END_IF;
+        EXIT;
+	END_IF;
+END_FOR;
+
+(* increment scan line every cycle *)
+line := INT_TO_BYTE(_BYTE_TO_INT(line) + 1) AND BYTE#2#0000_0011;
+temp := SHL(BYTE#1,_BYTE_TO_INT(line));
+
+Y1 := BIT_OF_DWORD(BYTE_TO_DWORD(temp),0); (* temp.0 *)
+Y2 := BIT_OF_DWORD(BYTE_TO_DWORD(temp),1); (* temp.1 *)
+Y3 := BIT_OF_DWORD(BYTE_TO_DWORD(temp),2); (* temp.2 *)
+Y4 := BIT_OF_DWORD(BYTE_TO_DWORD(temp),3); (* temp.3 *)
+
+(* Fromm Oscat Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[MATRIX is a matrix keyboard encoder for 4 rows and up to 5 columns]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="MUX_2" pouType="function">
+        <interface>
+          <returnType>
+            <BOOL/>
+          </returnType>
+          <inputVars>
+            <variable name="D0">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="D1">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="A0">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[MUX_2 := SEL(A0, D0, D1);
+
+(* Fromm Oscat Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[dual input multiplexer]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="MUX_4" pouType="function">
+        <interface>
+          <returnType>
+            <BOOL/>
+          </returnType>
+          <inputVars>
+            <variable name="D0">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="D1">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="D2">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="D3">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="A0">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="A1">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[IF A1 THEN
+	MUX_4 := SEL(A0, D2, D3);
+ELSE
+	MUX_4 := SEL(A0, D0, D1);
+END_IF;
+
+(* Fromm Oscat Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[quad input multiplexer]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="PARITY" pouType="function">
+        <interface>
+          <returnType>
+            <BOOL/>
+          </returnType>
+          <inputVars>
+            <variable name="IN">
+              <type>
+                <DWORD/>
+              </type>
+            </variable>
+          </inputVars>
+          <localVars>
+            <variable name="in2">
+              <type>
+                <DWORD/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[in2:=in;
+WHILE in2 > DWORD#0 DO
+	parity := parity XOR BIT_OF_DWORD(in2,0) XOR BIT_OF_DWORD(in2,1) XOR BIT_OF_DWORD(in2,2) XOR BIT_OF_DWORD(in2,3);
+	in2 := SHR(in2,4);
+END_WHILE;
+
+(* Fromm Oscat Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function calculates the even parity of an input Dword]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="SHL1" pouType="function">
+        <interface>
+          <returnType>
+            <DWORD/>
+          </returnType>
+          <inputVars>
+            <variable name="IN">
+              <type>
+                <DWORD/>
+              </type>
+            </variable>
+            <variable name="N">
+              <type>
+                <INT/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[SHL1 := SHR(DWORD#16#FF_FF_FF_FF,32-N) OR SHL(IN,N);
+
+(* Fromm Oscat Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[SHL1 shifts N bits to the left filling the new bits with 1]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="SHR1" pouType="function">
+        <interface>
+          <returnType>
+            <DWORD/>
+          </returnType>
+          <inputVars>
+            <variable name="IN">
+              <type>
+                <DWORD/>
+              </type>
+            </variable>
+            <variable name="N">
+              <type>
+                <INT/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[SHR1 := SHL(DWORD#16#FF_FF_FF_FF,32-N) OR SHR(IN,N);
+
+(* Fromm Oscat Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[SHR1 shifts N bits to the right filling the new bits with 1]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="SWAP_BYTE" pouType="function">
+        <interface>
+          <returnType>
+            <WORD/>
+          </returnType>
+          <inputVars>
+            <variable name="IN">
+              <type>
+                <WORD/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[Swap_Byte := ROL(in,8);
+
+(* Fromm Oscat Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[This function swaps the high and low byte of the word in]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="SWAP_BYTE2" pouType="function">
+        <interface>
+          <returnType>
+            <DWORD/>
+          </returnType>
+          <inputVars>
+            <variable name="IN">
+              <type>
+                <DWORD/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[Swap_Byte2 := (ROR(in,8) AND DWORD#16#FF00FF00) OR (ROL(in,8) AND DWORD#16#00FF00FF);
+
+(* Fromm Oscat Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[This function reverses the byte order in the dword.]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="WORD_OF_BYTE" pouType="function">
+        <interface>
+          <returnType>
+            <WORD/>
+          </returnType>
+          <inputVars>
+            <variable name="B0">
+              <type>
+                <BYTE/>
+              </type>
+            </variable>
+            <variable name="B1">
+              <type>
+                <BYTE/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[WORD_OF_BYTE := SHL(BYTE_TO_WORD(B1),8) OR BYTE_TO_WORD(B0);
+
+(* Fromm Oscat Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function creates a word from 2 individual bytes]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="WORD_OF_DWORD" pouType="function">
+        <interface>
+          <returnType>
+            <WORD/>
+          </returnType>
+          <inputVars>
+            <variable name="IN">
+              <type>
+                <DWORD/>
+              </type>
+            </variable>
+            <variable name="N">
+              <type>
+                <BYTE/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[WORD_OF_DWORD := DWORD_TO_WORD(SHR(in,_BYTE_TO_INT(SHL(n,4))));
+
+(* Fromm Oscat Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function extracts a single word from the nth position from right ]]></xhtml:p>
+        </documentation>
+      </pou>
+    </pous>
+  </types>
+  <instances>
+    <configurations>
+      <configuration name="Config0">
+        <resource name="Res0">
+          <task name="task0" priority="0" interval="T#20ms">
+            <pouInstance name="instance0" typeName="program0"/>
+          </task>
+        </resource>
+      </configuration>
+    </configurations>
+  </instances>
+</project>

@@ -1,0 +1,1170 @@
+<?xml version='1.0' encoding='utf-8'?>
+<project xmlns:ns1="http://www.plcopen.org/xml/tc6_0201" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.plcopen.org/xml/tc6_0201">
+  <fileHeader companyName="Unbekannt" productName="Unbenannt" productVersion="1" creationDateTime="2019-09-25T13:18:52"/>
+  <contentHeader name="Unbenannt" modificationDateTime="2019-09-25T15:21:28">
+    <coordinateInfo>
+      <fbd>
+        <scaling x="10" y="10"/>
+      </fbd>
+      <ld>
+        <scaling x="10" y="10"/>
+      </ld>
+      <sfc>
+        <scaling x="10" y="10"/>
+      </sfc>
+    </coordinateInfo>
+  </contentHeader>
+  <types>
+    <dataTypes>
+      <dataType name="OSCAT_COMPLEX">
+        <baseType>
+          <struct>
+            <variable name="re">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="im">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+      </dataType>
+    </dataTypes>
+    <pous>
+      <pou name="SINH" pouType="function">
+        <interface>
+          <returnType>
+            <REAL/>
+          </returnType>
+          <inputVars>
+            <variable name="X">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[IF ABS(x) < 2.0E-3 THEN
+	SINH := X;
+ELSE
+	SINH := (EXP(x) - EXP(-x)) * 0.5;
+END_IF;
+(* from OSCAT library; www.oscat.de  *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function calculates the sin hyperbolicus]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="COSH" pouType="function">
+        <interface>
+          <returnType>
+            <REAL/>
+          </returnType>
+          <inputVars>
+            <variable name="x">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+          <localVars>
+            <variable name="t_c">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[t_c := EXP(X);
+COSH := (1.0 / t_c + t_c) * 0.5;
+(* from OSCAT library; www.oscat.de  *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[calculates the cos hyperbolicus]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="SGN" pouType="function">
+        <interface>
+          <returnType>
+            <INT/>
+          </returnType>
+          <inputVars>
+            <variable name="x">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[IF X > 0.0 THEN
+	sgn := 1;
+ELSIF X < 0.0 THEN
+	sgn := -1;
+ELSE
+	sgn := 0;
+END_IF;
+(* from OSCAT library; www.oscat.de  *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[sgn returns 0 when X = 0 , -1 when X < 1 and +1 when X > 1]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="ATAN2" pouType="function">
+        <interface>
+          <returnType>
+            <REAL/>
+          </returnType>
+          <inputVars>
+            <variable name="X">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="Y">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[IF X > 0.0 THEN
+	ATAN2 := ATAN(Y/X);
+ELSIF X < 0.0 THEN
+	IF Y >= 0.0 THEN
+		ATAN2 := ATAN(Y/X) + 3.14159265358979323846264338327950288;
+	ELSE
+		ATAN2 := ATAN(Y/X) - 3.14159265358979323846264338327950288;
+	END_IF;
+ELSIF Y > 0.0 THEN
+	ATAN2 := 1.5707963267948965580;
+ELSIF Y < 0.0 THEN
+	ATAN2 := -1.5707963267948965580;
+ELSE
+	ATAN2 := 0.0;
+END_IF;
+
+
+(* from OSCAT library; www.oscat.de  *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function calculates the angle in a coordinate system in rad.]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="HYPOT" pouType="function">
+        <interface>
+          <returnType>
+            <REAL/>
+          </returnType>
+          <inputVars>
+            <variable name="X">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="Y">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[HYPOT := SQRT(x*x + y*y);
+(* from OSCAT library; www.oscat.de  *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[calculates the pythagorean function]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="program0" pouType="program">
+        <interface>
+          <localVars>
+            <variable name="LocalVar0">
+              <type>
+                <DINT/>
+              </type>
+            </variable>
+            <variable name="LocalVar1">
+              <type>
+                <DINT/>
+              </type>
+            </variable>
+            <variable name="LocalVar2">
+              <type>
+                <DINT/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <FBD>
+            <block localId="1" typeName="ADD" executionOrderId="0" height="60" width="70">
+              <position x="580" y="150"/>
+              <inputVariables>
+                <variable formalParameter="IN1">
+                  <connectionPointIn>
+                    <relPosition x="0" y="30"/>
+                    <connection refLocalId="2">
+                      <position x="580" y="180"/>
+                      <position x="550" y="180"/>
+                    </connection>
+                  </connectionPointIn>
+                </variable>
+                <variable formalParameter="IN2">
+                  <connectionPointIn>
+                    <relPosition x="0" y="50"/>
+                    <connection refLocalId="3">
+                      <position x="580" y="200"/>
+                      <position x="565" y="200"/>
+                      <position x="565" y="210"/>
+                      <position x="550" y="210"/>
+                    </connection>
+                  </connectionPointIn>
+                </variable>
+              </inputVariables>
+              <inOutVariables/>
+              <outputVariables>
+                <variable formalParameter="OUT">
+                  <connectionPointOut>
+                    <relPosition x="70" y="30"/>
+                  </connectionPointOut>
+                </variable>
+              </outputVariables>
+            </block>
+            <inVariable localId="2" executionOrderId="0" height="30" width="90" negated="false">
+              <position x="460" y="160"/>
+              <connectionPointOut>
+                <relPosition x="90" y="20"/>
+              </connectionPointOut>
+              <expression>LocalVar0</expression>
+            </inVariable>
+            <inVariable localId="3" executionOrderId="0" height="30" width="90" negated="false">
+              <position x="460" y="190"/>
+              <connectionPointOut>
+                <relPosition x="90" y="20"/>
+              </connectionPointOut>
+              <expression>LocalVar1</expression>
+            </inVariable>
+            <outVariable localId="4" executionOrderId="0" height="30" width="90" negated="false">
+              <position x="690" y="170"/>
+              <connectionPointIn>
+                <relPosition x="0" y="10"/>
+                <connection refLocalId="1" formalParameter="OUT">
+                  <position x="690" y="180"/>
+                  <position x="650" y="180"/>
+                </connection>
+              </connectionPointIn>
+              <expression>LocalVar2</expression>
+            </outVariable>
+          </FBD>
+        </body>
+      </pou>
+      <pou name="CABS" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="X">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="_CABS">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </outputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[_CABS := HYPOT(x.re, x.im);
+
+(*From OSCAT Library, www.oscat.de *)
+(* datatype OSCAT_COMPLEX, HYPOT required *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function the aboslute value of a complex number]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="CACOS" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="X">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="_CACOS">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+          </outputVars>
+          <localVars>
+            <variable name="Y">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+            <variable name="_CACOSH">
+              <type>
+                <derived name="CACOSH"/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[_CACOSH(X:=x);
+y := _CACOSH._CACOSH;
+_CACOS.re := y.im;
+_CACOS.im := -y.re;
+
+(*From OSCAT Library, www.oscat.de *)
+(* datatype OSCAT_COMPLEX, CACOSH required *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function calculates the arcus cosinus function of a complex number]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="CACOSH" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="X">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="_CACOSH">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+          </outputVars>
+          <localVars>
+            <variable name="Y">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+            <variable name="_CLOG">
+              <type>
+                <derived name="CLOG"/>
+              </type>
+            </variable>
+            <variable name="_CSQRT">
+              <type>
+                <derived name="CSQRT"/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[y.re := (X.re - X.im)*(X.re + X.im) - 1.0;
+y.im := 2.0 * X.re * X.im;
+_CSQRT(X:=y);
+y    := _CSQRT._CSQRT;
+y.re := y.re + x.re;
+y.im := y.im + x.im;
+_CLOG(X:=y);
+_CACOSH  := _CLOG._CLOG;
+
+(*From OSCAT Library, www.oscat.de *)
+(* datatype OSCAT_COMPLEX, CLOG, CSQRT required *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function calculates the hyperbolic arcus cosinus function of a complex number]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="CLOG" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="X">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="_CLOG">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+          </outputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[_CLOG.re := LN(HYPOT(X.re, X.im));
+_CLOG.im := ATAN2(X.im, X.re);
+
+(*From OSCAT Library, www.oscat.de *)
+(* datatype OSCAT_COMPLEX, ATAN2 required *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function calculates the complex natural (base e) logarithm]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="CSQRT" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="X">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="_CSQRT">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+          </outputVars>
+          <localVars>
+            <variable name="temp">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[temp := HYPOT(x.re, x.im);
+_CSQRT.re :=  SQRT(0.5 * (temp + x.re));
+_CSQRT.im :=  INT_TO_REAL(sgn(x.im)) * SQRT(0.5 * (temp - x.re));
+
+(*From OSCAT Library, www.oscat.de *)
+(* datatype OSCAT_COMPLEX, SGN required *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function calculates the complex sqare root]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="CADD" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="X">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+            <variable name="Y">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="_CADD">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+          </outputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[_CADD.re := x.re + y.re;
+_CADD.im := x.im + y.im;
+
+(*From OSCAT Library, www.oscat.de *)
+(* datatype OSCAT_COMPLEX required *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function add two complex numbers]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="CARG" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="X">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="_CARG">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </outputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[_CARG := ATAN2(X.im, X.re);
+
+(*From OSCAT Library, www.oscat.de *)
+(* datatype OSCAT_COMPLEX required *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function calculates the phase angle (argument) of a complex number]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="CASIN" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="X">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="_CASIN">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+          </outputVars>
+          <localVars>
+            <variable name="Y">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+            <variable name="_CASINH">
+              <type>
+                <derived name="CASINH"/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[y.re := -x.im;
+y.im := x.re;
+_CASINH(X:=y);
+y := _CASINH._CASINH;
+_CASIN.re := y.im;
+_CASIN.im := -y.re;
+
+(*From OSCAT Library, www.oscat.de *)
+(* datatype OSCAT_COMPLEX, CASINH required *)]]></xhtml:p>
+          </ST>
+        </body>
+      </pou>
+      <pou name="CASINH" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="X">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="_CASINH">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+          </outputVars>
+          <localVars>
+            <variable name="Y">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+            <variable name="_CLOG">
+              <type>
+                <derived name="CLOG"/>
+              </type>
+            </variable>
+            <variable name="_CSQRT">
+              <type>
+                <derived name="CSQRT"/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[y.re := (X.re - X.im)*(X.re + X.im) + 1.0;
+y.im := 2.0 * X.re * X.im;
+_CSQRT(X:=y);
+y    := _CSQRT._CSQRT;
+y.re := y.re + x.re;
+y.im := y.im + x.im;
+_CLOG(X:=y);
+_CASINH  := _CLOG._CLOG;
+
+(*From OSCAT Library, www.oscat.de *)
+(* datatype OSCAT_COMPLEX, CLOG, CSQRT required *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function calculates the hyperbolic arcus sinus ]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="CATAN" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="X">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="_CATAN">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+          </outputVars>
+          <localVars>
+            <variable name="r2">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="num">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="den">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[r2 := x.re * x.re;
+den := 1.0 - r2 - x.im * x.im;
+_CATAN.re := 0.5 * ATAN(2.0 * x.re / den);
+num := x.im + 1.0;
+num := r2 + num * num;
+den := x.im - 1.0;
+den := r2 + den * den;
+_CATAN.im := 0.25 * (LN(num)-LN(den));
+
+(*From OSCAT Library, www.oscat.de *)
+(* datatype OSCAT_COMPLEX required *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function calculates the complex arcus tangens]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="CATANH" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="X">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="_CATANH">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+          </outputVars>
+          <localVars>
+            <variable name="i2">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="num">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="den">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[i2 := x.im * x.im;
+num := 1.0 + x.re;
+num := i2 + num * num;
+den := 1.0 - x.re;
+den := i2 + den * den;
+_CATANH.re := 0.25 * (LN(num) - LN(den));
+den := 1.0 - x.re * x.re - i2;
+_CATANH.im := 0.5 * ATAN(2.0 * x.im / den);
+
+(*From OSCAT Library, www.oscat.de *)
+(* datatype OSCAT_COMPLEX, HYPOT required *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function calculates the complex arcus hyperbolic tangens]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="CCON" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="X">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="_CCON">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+          </outputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[_CCON.re := x.re;
+_CCON.im := -x.im;
+
+(*From OSCAT Library, www.oscat.de *)
+(* datatype OSCAT_COMPLEX required *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function calcucates the conjugation of a complex number]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="CCOSH" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="X">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="_CCOSH">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+          </outputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[_CCOSH.re := cosH(x.re) * COS(x.im);
+_CCOSH.im := sinH(x.re) * SIN(x.im);
+
+(*From OSCAT Library, www.oscat.de *)
+(* datatype OSCAT_COMPLEX, COSH, SINH required *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function calculates the arcus tangens function]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="CSET" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="RE">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="IM">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="_CSET">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+          </outputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[_CSET.re := RE;
+_CSET.im := IM;
+
+(*From OSCAT Library, www.oscat.de *)
+(* datatype OSCAT_COMPLEX required *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function creates a complex number from two real inputs]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="CCOS" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="X">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="_CCOS">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+          </outputVars>
+          <localVars>
+            <variable name="_CSET">
+              <type>
+                <derived name="CSET"/>
+              </type>
+            </variable>
+            <variable name="_CCOSH">
+              <type>
+                <derived name="CCOSH"/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[_CSET(RE:= -X.im,IM:=X.re);
+_CCOSH(X:=_CSET._CSET);
+_CCOS := _CCOSH._CCOSH;
+
+(*From OSCAT Library, www.oscat.de *)
+(* datatype OSCAT_COMPLEX, CSET, CCOSH required *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function calculates the cosinus function of a complex number]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="CDIV" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="X">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+            <variable name="Y">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="_CDIV">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+          </outputVars>
+          <localVars>
+            <variable name="temp">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[temp := Y.re * Y.re + Y.im * Y.im;
+IF temp = 0.0 THEN _CDIV.re := 0.0;_CDIV.im := 0.0;RETURN;END_IF;
+_CDIV.re := (X.re * Y.re + X.im * Y.im) / temp;
+_CDIV.im := (X.im * Y.re - X.re * Y.im) / temp;
+
+(*From OSCAT Library, www.oscat.de *)
+(* datatype OSCAT_COMPLEX required *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function divides two complex numbers]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="CEXP" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="X">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="_CEXP">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+          </outputVars>
+          <localVars>
+            <variable name="temp">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[temp := EXP(X.re);
+_CEXP.re := temp * COS(X.im);
+_CEXP.im := temp * SIN(X.im);
+
+(*From OSCAT Library, www.oscat.de *)
+(* datatype OSCAT_COMPLEX required *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function calculates the complex exponent]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="CINV" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="X">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="_CINV">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+          </outputVars>
+          <localVars>
+            <variable name="temp">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[temp := X.re * X.re + X.im * X.im;
+IF temp = 0.0 THEN _CINV.re := 0.0;_CINV.im := 0.0;RETURN;END_IF;
+_CINV.re := X.re / temp;
+_CINV.im := -X.im / temp;
+
+(*From OSCAT Library, www.oscat.de *)
+(* datatype OSCAT_COMPLEX, HYPOT required *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function calculates the inverse of a complex numbers (1 / X)]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="CMUL" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="X">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+            <variable name="Y">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="_CMUL">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+          </outputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[_CMUL.re := X.re * Y.re - X.im * Y.im;
+_CMUL.im := X.re * Y.im + X.im * Y.re;
+
+(*From OSCAT Library, www.oscat.de *)
+(* datatype OSCAT_COMPLEX required *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function multiplies two complex numbers]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="CPOL" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="L">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="A">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="_CPOL">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+          </outputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[_CPOL.re := L * COS(A);
+_CPOL.im := L * SIN(A);
+
+(*From OSCAT Library, www.oscat.de *)
+(* datatype OSCAT_COMPLEX required *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function creates a complex numbers for the polar form ]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="CPOW" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="X">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+            <variable name="Y">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="_CPOW">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+          </outputVars>
+          <localVars>
+            <variable name="_CLOG">
+              <type>
+                <derived name="CLOG"/>
+              </type>
+            </variable>
+            <variable name="_CEXP">
+              <type>
+                <derived name="CEXP"/>
+              </type>
+            </variable>
+            <variable name="_CMUL">
+              <type>
+                <derived name="CMUL"/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[_CLOG(X:=X);
+_CMUL(X:=Y,Y:=_CLOG._CLOG);
+_CEXP(X:=_CMUL._CMUL);
+_CPOW := _CEXP._CEXP;
+
+(*From OSCAT Library, www.oscat.de *)
+(* datatype OSCAT_COMPLEX, CLOG, CEXP, CMUL required *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function calculates the complex power function x to the power of y]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="CSUB" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="X">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+            <variable name="Y">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="_CSUB">
+              <type>
+                <derived name="OSCAT_COMPLEX"/>
+              </type>
+            </variable>
+          </outputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[_CSUB.re := X.re - Y.re;
+_CSUB.im := X.im - Y.im;
+
+(*From OSCAT Library, www.oscat.de *)
+(* datatype OSCAT_COMPLEX required *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function subtracts two complex numbers]]></xhtml:p>
+        </documentation>
+      </pou>
+    </pous>
+  </types>
+  <instances>
+    <configurations>
+      <configuration name="Config0">
+        <resource name="Res0">
+          <task name="task0" priority="0" interval="T#20ms">
+            <pouInstance name="instance0" typeName="program0"/>
+          </task>
+        </resource>
+      </configuration>
+    </configurations>
+  </instances>
+</project>

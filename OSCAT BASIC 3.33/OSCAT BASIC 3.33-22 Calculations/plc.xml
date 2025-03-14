@@ -1,0 +1,896 @@
+<?xml version='1.0' encoding='utf-8'?>
+<project xmlns:ns1="http://www.plcopen.org/xml/tc6_0201" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.plcopen.org/xml/tc6_0201">
+  <fileHeader companyName="Unbekannt" productName="Unbenannt" productVersion="1" creationDateTime="2019-09-24T15:46:17"/>
+  <contentHeader name="Unbenannt" modificationDateTime="2019-09-25T10:11:45">
+    <coordinateInfo>
+      <fbd>
+        <scaling x="10" y="10"/>
+      </fbd>
+      <ld>
+        <scaling x="10" y="10"/>
+      </ld>
+      <sfc>
+        <scaling x="10" y="10"/>
+      </sfc>
+    </coordinateInfo>
+  </contentHeader>
+  <types>
+    <dataTypes/>
+    <pous>
+      <pou name="F_TO_C" pouType="function">
+        <interface>
+          <returnType>
+            <REAL/>
+          </returnType>
+          <inputVars>
+            <variable name="FAHRENHEIT">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[F_TO_C := (fahrenheit - 32.0) * 0.5555555555555;
+
+(* From OSCAT Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+      </pou>
+      <pou name="C_TO_K" pouType="function">
+        <interface>
+          <returnType>
+            <REAL/>
+          </returnType>
+          <inputVars>
+            <variable name="CELSIUS">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[C_to_K := Celsius - 273.15;
+
+(* From OSCAT Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function converts celsius to kelvin]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="C_TO_F" pouType="function">
+        <interface>
+          <returnType>
+            <REAL/>
+          </returnType>
+          <inputVars>
+            <variable name="CELSIUS">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[C_TO_F := celsius * 1.8 + 32.0;
+
+(* From OSCAT Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function converts celsius  to fahrenheit ]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="BFT_TO_MS" pouType="function">
+        <interface>
+          <returnType>
+            <REAL/>
+          </returnType>
+          <inputVars>
+            <variable name="BfT">
+              <type>
+                <INT/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[BFT_TO_MS := EXPT(INT_TO_REAL(BFT), 1.5) * 0.836;
+
+(* From OSCAT Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function converts wind speed from beaufort to m/s]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="ASTRO" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="M">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="AE">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="PC">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="LJ">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="YM">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="YAE">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="YPC">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="YLJ">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </outputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[YAE :=	AE
+		+ m * 6.6845871535E-012
+		+ PC * 206265.0
+		+ LJ * 63240.0;
+Ym := YAE * 149.597870E9;
+YPC := YAE * 4.8481322570E-006;
+YLJ := YAE * 1.5812776724E-005;
+
+(* From OSCAT Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function converts different length units]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="ENERGY" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="J">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="C">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="WH">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="YJ">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="YC">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="YWH">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </outputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[YJ := J + Wh * 3600.0 + C * 4.1868;
+YC := YJ * 0.238845896627496;
+YWh := YJ * 2.7777777778E-004;
+
+(* From OSCAT Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function converts different energy units]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="program0" pouType="program">
+        <interface>
+          <localVars>
+            <variable name="LocalVar0">
+              <type>
+                <DINT/>
+              </type>
+            </variable>
+            <variable name="LocalVar1">
+              <type>
+                <DINT/>
+              </type>
+            </variable>
+            <variable name="LocalVar2">
+              <type>
+                <DINT/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <FBD>
+            <block localId="1" typeName="ADD" executionOrderId="0" height="60" width="70">
+              <position x="600" y="110"/>
+              <inputVariables>
+                <variable formalParameter="IN1">
+                  <connectionPointIn>
+                    <relPosition x="0" y="30"/>
+                    <connection refLocalId="2">
+                      <position x="600" y="140"/>
+                      <position x="570" y="140"/>
+                    </connection>
+                  </connectionPointIn>
+                </variable>
+                <variable formalParameter="IN2">
+                  <connectionPointIn>
+                    <relPosition x="0" y="50"/>
+                    <connection refLocalId="3">
+                      <position x="600" y="160"/>
+                      <position x="570" y="160"/>
+                    </connection>
+                  </connectionPointIn>
+                </variable>
+              </inputVariables>
+              <inOutVariables/>
+              <outputVariables>
+                <variable formalParameter="OUT">
+                  <connectionPointOut>
+                    <relPosition x="70" y="30"/>
+                  </connectionPointOut>
+                </variable>
+              </outputVariables>
+            </block>
+            <inVariable localId="2" executionOrderId="0" height="30" width="90" negated="false">
+              <position x="480" y="120"/>
+              <connectionPointOut>
+                <relPosition x="90" y="20"/>
+              </connectionPointOut>
+              <expression>LocalVar0</expression>
+            </inVariable>
+            <inVariable localId="3" executionOrderId="0" height="30" width="90" negated="false">
+              <position x="480" y="150"/>
+              <connectionPointOut>
+                <relPosition x="90" y="10"/>
+              </connectionPointOut>
+              <expression>LocalVar1</expression>
+            </inVariable>
+            <outVariable localId="4" executionOrderId="0" height="30" width="90" negated="false">
+              <position x="720" y="120"/>
+              <connectionPointIn>
+                <relPosition x="0" y="20"/>
+                <connection refLocalId="1" formalParameter="OUT">
+                  <position x="720" y="140"/>
+                  <position x="670" y="140"/>
+                </connection>
+              </connectionPointIn>
+              <expression>LocalVar2</expression>
+            </outVariable>
+          </FBD>
+        </body>
+      </pou>
+      <pou name="F_TO_OM" pouType="function">
+        <interface>
+          <returnType>
+            <REAL/>
+          </returnType>
+          <inputVars>
+            <variable name="F">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[F_to_OM := 6.283185307179586476 * F;
+
+(* From OSCAT Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function converts frequency to Omega F]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="F_TO_PT" pouType="function">
+        <interface>
+          <returnType>
+            <TIME/>
+          </returnType>
+          <inputVars>
+            <variable name="F">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[F_TO_PT := DWORD_TO_TIME(REAL_TO_DWORD(1.0 / F * 1000.0));
+
+(* From OSCAT Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function converts frequency to periode time  ]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="GEO_TO_DEG" pouType="function">
+        <interface>
+          <returnType>
+            <REAL/>
+          </returnType>
+          <inputVars>
+            <variable name="_D">
+              <type>
+                <INT/>
+              </type>
+            </variable>
+            <variable name="M">
+              <type>
+                <INT/>
+              </type>
+            </variable>
+            <variable name="SEC">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[GEO_TO_DEG := INT_TO_REAL(_D) + INT_TO_REAL(M) * 0.016666666666667 + sec * 0.00027777777777778;
+
+(* From OSCAT Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function converts degrees, minutes seconds to decimal degrees]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="K_TO_C" pouType="function">
+        <interface>
+          <returnType>
+            <REAL/>
+          </returnType>
+          <inputVars>
+            <variable name="KELVIN">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[K_to_C := Kelvin + 273.15;
+
+
+(* From OSCAT Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function converts kelvin to celsius]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="KMH_TO_MS" pouType="function">
+        <interface>
+          <returnType>
+            <REAL/>
+          </returnType>
+          <inputVars>
+            <variable name="KMH">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[KMH_TO_MS := kmh * 0.2777777777777;
+
+(* From OSCAT Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function converts velocities from Kilometers / hour to Meters ]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="LENGTH" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="M">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="P">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="IN">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="FT">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="YD">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="MILE">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="SM">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="FM">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="YM">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="YP">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="YIN">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="YFT">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="YYD">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="YMILE">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="YSM">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="YFM">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </outputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[Ym :=	m
+		+ p * 0.000376065
+		+ in * 0.0254
+		+ ft * 0.3048
+		+ yd * 0.9144
+		+ mile * 1609.344
+		+ sm * 1852.0
+		+ fm * 1.829;
+Yp := Ym * 2659.11478068951;
+Yin := Ym * 39.37007874016;
+Yft := Ym * 3.28083989501;
+Yyd := Ym * 1.09361329834;
+Ymile := Ym * 0.00062137119;
+Ysm := Ym * 0.00053995680;
+Yfm := Ym * 0.54674685621;
+
+(* From OSCAT Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function converts different length units]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="MS_TO_BFT" pouType="function">
+        <interface>
+          <returnType>
+            <INT/>
+          </returnType>
+          <inputVars>
+            <variable name="MS">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[MS_TO_BFT := REAL_TO_INT(EXPT(MS * 1.196172, 0.666667));
+
+(* From OSCAT Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function converts wind speed from M/s to beaufort]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="MS_TO_KMH" pouType="function">
+        <interface>
+          <returnType>
+            <REAL/>
+          </returnType>
+          <inputVars>
+            <variable name="MS">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[MS_TO_KMH := ms * 3.6;
+
+(* From OSCAT Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[converts velocities from Meters / Second to Kilometers / hour]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="OM_TO_F" pouType="function">
+        <interface>
+          <returnType>
+            <REAL/>
+          </returnType>
+          <inputVars>
+            <variable name="OM">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[OM_to_F := OM / 6.283185307179586476;
+
+(* From OSCAT Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function converts Omega F to frequency]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="PRESSURE" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="MWS">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="TORR">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="ATT">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="ATM">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="PA">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="BAR">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="YMWS">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="YTORR">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="YATT">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="YATM">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="YPA">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="YBAR">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </outputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[Ybar := bar +
+		pa * 1.0E-5 +
+		0.980665 * att +
+		1.01325 * atm +
+		0.001333224 * torr +
+		0.0980665 * mws;
+Ymws := ybar * 10.1971621297793;
+Ytorr := ybar * 750.0615050434140;
+Yatt := ybar * 1.0197162129779;
+yatm := ybar * 0.9869232667160;
+Ypa := ybar * 100000.0;
+
+(* From OSCAT Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function converts different pressure units]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="PT_TO_F" pouType="function">
+        <interface>
+          <returnType>
+            <REAL/>
+          </returnType>
+          <inputVars>
+            <variable name="PT">
+              <type>
+                <TIME/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[PT_TO_F := 1000.0 / DWORD_TO_REAL(TIME_TO_DWORD(PT));
+
+(* From OSCAT Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function converts periode time to frequency]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="SPEED" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="MS">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="KMH">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="KN">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="MH">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="YMS">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="YKMH">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="YKN">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="YMH">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </outputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[Yms := ms +
+		kmh * 0.27777777777778 +
+		kn * 0.5144444 +
+		mh * 0.44704;
+Ykmh := Yms * 3.6;
+Ykn := Yms * 1.94384466037535;
+Ymh := Yms * 2.23693629205440;
+
+(* From OSCAT Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function converts different speed units]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="TEMPERATURE" pouType="functionBlock">
+        <interface>
+          <inputVars>
+            <variable name="K">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="C">
+              <type>
+                <REAL/>
+              </type>
+              <initialValue>
+                <simpleValue value="-273.15"/>
+              </initialValue>
+            </variable>
+            <variable name="F">
+              <type>
+                <REAL/>
+              </type>
+              <initialValue>
+                <simpleValue value="-459.67"/>
+              </initialValue>
+            </variable>
+            <variable name="RE">
+              <type>
+                <REAL/>
+              </type>
+              <initialValue>
+                <simpleValue value="-218.52"/>
+              </initialValue>
+            </variable>
+            <variable name="RA">
+              <type>
+                <REAL/>
+              </type>
+              <initialValue>
+                <simpleValue value="0.0"/>
+              </initialValue>
+            </variable>
+          </inputVars>
+          <outputVars>
+            <variable name="YK">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="YC">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="YF">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="YRE">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="YRA">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </outputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[YK := K + (C + 273.15) + (F + 459.67) * 0.555555555555 + (Re * 1.25 + 273.15) + (Ra * 0.555555555555);
+YC := YK -273.15;
+YF := YK * 1.8 - 459.67;
+YRe := (YK - 273.15) * 0.8;
+YRa := YK * 1.8;
+
+(* From OSCAT Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function converts different temperature units]]></xhtml:p>
+        </documentation>
+      </pou>
+    </pous>
+  </types>
+  <instances>
+    <configurations>
+      <configuration name="Config0">
+        <resource name="Res0">
+          <task name="task0" priority="0" interval="T#20ms">
+            <pouInstance name="instance0" typeName="program0"/>
+          </task>
+        </resource>
+      </configuration>
+    </configurations>
+  </instances>
+</project>

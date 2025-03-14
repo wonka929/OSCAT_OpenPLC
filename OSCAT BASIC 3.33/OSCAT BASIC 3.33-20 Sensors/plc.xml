@@ -1,0 +1,673 @@
+<?xml version='1.0' encoding='utf-8'?>
+<project xmlns:ns1="http://www.plcopen.org/xml/tc6.xsd" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.plcopen.org/xml/tc6_0201">
+  <fileHeader companyName="Unbekannt" productName="Unbenannt" productVersion="1" creationDateTime="2019-09-10T09:56:56"/>
+  <contentHeader name="Unbenannt" modificationDateTime="2019-09-10T11:24:07">
+    <coordinateInfo>
+      <fbd>
+        <scaling x="10" y="10"/>
+      </fbd>
+      <ld>
+        <scaling x="10" y="10"/>
+      </ld>
+      <sfc>
+        <scaling x="10" y="10"/>
+      </sfc>
+    </coordinateInfo>
+  </contentHeader>
+  <types>
+    <dataTypes/>
+    <pous>
+      <pou name="MID3" pouType="function">
+        <interface>
+          <returnType>
+            <REAL/>
+          </returnType>
+          <inputVars>
+            <variable name="IN1">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="IN2">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="IN3">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+          <localVars>
+            <variable name="_IN1">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="_IN2">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="_IN3">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[_IN1 := IN1; (* VAR_INPUT auf Variablen umkopieren , da diese schreibgeschützt sind *)
+_IN2 := IN2;
+_IN3 := IN3;
+
+IF _IN1 > _IN2 THEN MID3 := _IN1; _IN1 := _IN2; _IN2 := MID3; END_IF;
+IF _IN2 > _IN3 THEN _IN2 := _IN3; END_IF;
+MID3 := SEL(_IN1 > _IN2, _IN2, _IN1);
+(* from OSCAT library; www.oscat.de  *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[returns the mid value of 3 real inputs]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="program0" pouType="program">
+        <interface>
+          <localVars>
+            <variable name="LocalVar0">
+              <type>
+                <DINT/>
+              </type>
+            </variable>
+            <variable name="LocalVar1">
+              <type>
+                <DINT/>
+              </type>
+            </variable>
+            <variable name="LocalVar2">
+              <type>
+                <DINT/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <FBD>
+            <block localId="1" typeName="ADD" executionOrderId="0" height="60" width="70">
+              <position x="600" y="140"/>
+              <inputVariables>
+                <variable formalParameter="IN1">
+                  <connectionPointIn>
+                    <relPosition x="0" y="30"/>
+                    <connection refLocalId="2">
+                      <position x="600" y="170"/>
+                      <position x="565" y="170"/>
+                      <position x="565" y="160"/>
+                      <position x="530" y="160"/>
+                    </connection>
+                  </connectionPointIn>
+                </variable>
+                <variable formalParameter="IN2">
+                  <connectionPointIn>
+                    <relPosition x="0" y="50"/>
+                    <connection refLocalId="3">
+                      <position x="600" y="190"/>
+                      <position x="530" y="190"/>
+                    </connection>
+                  </connectionPointIn>
+                </variable>
+              </inputVariables>
+              <inOutVariables/>
+              <outputVariables>
+                <variable formalParameter="OUT">
+                  <connectionPointOut>
+                    <relPosition x="70" y="30"/>
+                  </connectionPointOut>
+                </variable>
+              </outputVariables>
+            </block>
+            <inVariable localId="2" executionOrderId="0" height="30" width="90" negated="false">
+              <position x="440" y="140"/>
+              <connectionPointOut>
+                <relPosition x="90" y="20"/>
+              </connectionPointOut>
+              <expression>LocalVar0</expression>
+            </inVariable>
+            <inVariable localId="3" executionOrderId="0" height="30" width="90" negated="false">
+              <position x="440" y="170"/>
+              <connectionPointOut>
+                <relPosition x="90" y="20"/>
+              </connectionPointOut>
+              <expression>LocalVar1</expression>
+            </inVariable>
+            <outVariable localId="4" executionOrderId="0" height="30" width="90" negated="false">
+              <position x="710" y="160"/>
+              <connectionPointIn>
+                <relPosition x="0" y="10"/>
+                <connection refLocalId="1" formalParameter="OUT">
+                  <position x="710" y="170"/>
+                  <position x="670" y="170"/>
+                </connection>
+              </connectionPointIn>
+              <expression>LocalVar2</expression>
+            </outVariable>
+          </FBD>
+        </body>
+      </pou>
+      <pou name="MULTI_IN" pouType="function">
+        <interface>
+          <returnType>
+            <REAL/>
+          </returnType>
+          <inputVars>
+            <variable name="IN_1">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="IN_2">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="IN_3">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="DEFAULT">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="IN_MIN">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="IN_MAX">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="MODE">
+              <type>
+                <BYTE/>
+              </type>
+            </variable>
+          </inputVars>
+          <localVars>
+            <variable name="count">
+              <type>
+                <INT/>
+              </type>
+            </variable>
+            <variable name="F1">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="F2">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+            <variable name="F3">
+              <type>
+                <BOOL/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[F1 :=  in_1 > in_min AND in_1 < in_max;
+F2 :=  in_2 > in_min AND in_2 < in_max;
+F3 :=  in_3 > in_min AND in_3 < in_max;
+
+CASE BYTE_TO_INT(mode) OF
+0:	count := 0;
+	IF F1 THEN
+		count := count + 1;
+		MULTI_IN := in_1;
+	ELSE
+		MULTI_IN := 0.0;
+	END_IF;
+	IF F2 THEN
+		count := count + 1;
+		MULTI_IN := MULTI_IN + in_2;
+	END_IF;
+	IF F3 THEN
+		count := count + 1;
+		MULTI_IN := MULTI_IN + in_3;
+	END_IF;
+	MULTI_IN := SEL(count = 0, MULTI_IN / INT_TO_REAL(count), default);
+
+1:	MULTI_IN := SEL(F1, default, IN_1);
+
+2:	MULTI_IN := SEL(F2, default, IN_2);
+
+3:	MULTI_IN := SEL(F3, default, IN_3);
+
+4:	MULTI_IN := default;
+
+5:	MULTI_IN := SEL(F1, in_max, IN_1);
+	IF F2 AND in_2 < MULTI_IN THEN MULTI_IN := in_2; END_IF;
+	IF F3 AND in_3 < MULTI_IN THEN MULTI_IN := in_3; END_IF;
+	IF MULTI_IN = in_max THEN MULTI_IN := default; END_IF;
+
+6:	MULTI_IN := SEL(F1, in_min, IN_1);
+	IF F2 AND in_2 > MULTI_IN THEN MULTI_IN := in_2; END_IF;
+	IF F3 AND in_3 > MULTI_IN THEN MULTI_IN := in_3; END_IF;
+	IF MULTI_IN = in_min THEN MULTI_IN := default; END_IF;
+
+7:	IF F1 AND F2 AND F3 THEN MULTI_IN := MID3(in_1, in_2, in_3);
+	ELSIF F1 AND F2 THEN MULTI_IN := MIN(in_1, in_2);
+	ELSIF F1 AND F3 THEN MULTI_IN := MIN(in_1, in_3);
+	ELSIF F2 AND F3 THEN MULTI_IN := MIN(in_2, in_3);
+	ELSIF F1 THEN MULTI_IN := in_1;
+	ELSIF F2 THEN MULTI_IN := in_2;
+	ELSIF F3 THEN MULTI_IN := in_3;
+	ELSE MULTI_IN := default;
+	END_IF;
+
+END_CASE;
+
+(* From OSCAT Library, www.oscat.de *)
+(* MID3 required *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[multi_in is a signal conditioning function which can be configured in 8 different ways.]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="RES_NI" pouType="function">
+        <interface>
+          <returnType>
+            <REAL/>
+          </returnType>
+          <inputVars>
+            <variable name="_T">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="R0">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+          <localVars>
+            <variable name="T2">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[T2 := _T*_T;
+Res_NI := R0 + 0.5485*_T + 0.665E-3*T2 + 2.805E-9*T2*T2;
+
+(* From OSCAT Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function returs the resistance for a nickel sensor ]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="RES_NTC" pouType="function">
+        <interface>
+          <returnType>
+            <REAL/>
+          </returnType>
+          <inputVars>
+            <variable name="_T">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="RN">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="B">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[RES_NTC := RN * EXP(B * (1.0 / (_T+273.15) - 0.00335401643468053));
+
+(* From OSCAT Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function returs the resistance for a NTC sensor]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="RES_PT" pouType="function">
+        <interface>
+          <returnType>
+            <REAL/>
+          </returnType>
+          <inputVars>
+            <variable name="_T">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="R0">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+          <localVars>
+            <variable name="T2">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[T2 := _T * _T;
+
+IF _T >= 0.0 THEN
+	RES_PT := R0 * ( 1.0 + 3.90802E-3 * _T + -5.802E-7 * T2);
+ELSE
+	RES_PT := R0 * ( 1.0 + 3.90802E-3 * _T + -5.802E-7 * T2 + -4.27350E-12 * (_T - 100.0) * T2 * _T);
+END_IF;
+
+(* From OSCAT Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function returs the resistance for a platinum sensor]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="RES_SI" pouType="function">
+        <interface>
+          <returnType>
+            <REAL/>
+          </returnType>
+          <inputVars>
+            <variable name="_T">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="_RS">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="TS">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+          <localVars>
+            <variable name="TX">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[TX := _T - TS;
+RES_SI := _RS * ( 1.0 + 7.64E-3 * TX + 1.66E-5 * TX * TX);
+
+(* From OSCAT Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function returs the resistance for a silicium sensor ]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="SENSOR_INT" pouType="function">
+        <interface>
+          <returnType>
+            <REAL/>
+          </returnType>
+          <inputVars>
+            <variable name="VOLTAGE">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="CURRENT">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="RP">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="_RS">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+          <localVars>
+            <variable name="RG">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[IF current <> 0.0 THEN
+	RG := voltage / current;
+	SENSOR_INT := RP * ( RG - _RS) / ( RP + _RS - RG);
+END_IF;
+
+(* From OSCAT Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function calculates the real resistance of a sensor RX given a parasitic resistor in parallel to the sensor and an additional serial resistor]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="TEMP_NI" pouType="function">
+        <interface>
+          <returnType>
+            <REAL/>
+          </returnType>
+          <inputVars>
+            <variable name="RES">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="R0">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[TEMP_NI := (SQRT(0.30085225 - 2.66E-3 * (R0 - Res)) - 0.5485) * 751.8796992;
+
+(* From OSCAT Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function returns the temperature for a nickel sensor in a range from -60..+180 °C *)]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="TEMP_NTC" pouType="function">
+        <interface>
+          <returnType>
+            <REAL/>
+          </returnType>
+          <inputVars>
+            <variable name="RES">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="RN">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="B">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[IF res > 0.0 THEN
+	TEMP_NTC := B * 298.15 / (B + LN(RES / RN) * 298.15) -273.15;
+END_IF;
+
+(* From OSCAT Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function returs the temperature for a NTC sensor for a range from 0..85 °C.]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="TEMP_PT" pouType="function">
+        <interface>
+          <returnType>
+            <REAL/>
+          </returnType>
+          <inputVars>
+            <variable name="RES">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="R0">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+          <localVars>
+            <variable name="_step">
+              <type>
+                <REAL/>
+              </type>
+              <initialValue>
+                <simpleValue value="50.0"/>
+              </initialValue>
+            </variable>
+            <variable name="X">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="Y">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="t1">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[X := 3.9083E-3 * R0;
+Y := -5.775E-7 * R0;
+IF Res >= R0 THEN
+	t1 := X * X - 4.0 * Y * (R0 - Res);
+	IF t1 < 0.0 THEN
+		TEMP_PT := 10000.0;
+	ELSE
+		TEMP_PT := (-X + SQRT(t1)) / (2.0 * Y);
+	END_IF;
+ELSE
+	(* since the formula cannot be solved this is a successive approximation *)
+	TEMP_PT := -100.0;
+	WHILE _step > 0.01 DO
+		(* test if result greater or less *)
+		IF RES_PT(TEMP_PT, R0) < res THEN TEMP_PT := TEMP_PT + _step; ELSE TEMP_PT := TEMP_PT - _step; END_IF;
+		_step := _step * 0.5;
+	END_WHILE;
+END_IF;
+
+(* From OSCAT Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function returs the temperature for a platinum sensor for a range from -200..+850 °C]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="TEMP_SI" pouType="function">
+        <interface>
+          <returnType>
+            <REAL/>
+          </returnType>
+          <inputVars>
+            <variable name="RES">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="_RS">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="TS">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[TEMP_SI := (-7.64E-3 + SQRT(Res/_RS* 6.64E-5 - 0.803E-5)) * 30120.48193 + TS;
+
+(* From OSCAT Library, www.oscat.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function returs the temperature for a silicium sensor for a range from -60..+180 °C]]></xhtml:p>
+        </documentation>
+      </pou>
+    </pous>
+  </types>
+  <instances>
+    <configurations>
+      <configuration name="Config0">
+        <resource name="Res0">
+          <task name="task0" priority="0" interval="T#20ms">
+            <pouInstance name="instance0" typeName="program0"/>
+          </task>
+        </resource>
+      </configuration>
+    </configurations>
+  </instances>
+</project>

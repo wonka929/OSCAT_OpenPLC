@@ -1,0 +1,442 @@
+<?xml version='1.0' encoding='utf-8'?>
+<project xmlns:ns1="http://www.plcopen.org/xml/tc6.xsd" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.plcopen.org/xml/tc6_0201">
+  <fileHeader companyName="Unbekannt" productName="Unbenannt" productVersion="1" creationDateTime="2019-08-27T23:33:41"/>
+  <contentHeader name="Unbenannt" modificationDateTime="2019-08-28T00:19:15">
+    <coordinateInfo>
+      <fbd>
+        <scaling x="10" y="10"/>
+      </fbd>
+      <ld>
+        <scaling x="10" y="10"/>
+      </ld>
+      <sfc>
+        <scaling x="10" y="10"/>
+      </sfc>
+    </coordinateInfo>
+  </contentHeader>
+  <types>
+    <dataTypes/>
+    <pous>
+      <pou name="FLOOR2" pouType="function">
+        <interface>
+          <returnType>
+            <DINT/>
+          </returnType>
+          <inputVars>
+            <variable name="x">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[FLOOR2 := REAL_TO_DINT(X);
+IF DINT_TO_REAL(FLOOR2) > X THEN
+	FLOOR2 := FLOOR2 - DINT#1;
+END_IF;
+(* from OSCAT library; www.oscat.de  *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[This is a rounding function which returns the biggest possible integer which is less or equal to X. floor2(3.14) = 3 floor2(-3.14) = -4]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="MODR" pouType="function">
+        <interface>
+          <returnType>
+            <REAL/>
+          </returnType>
+          <inputVars>
+            <variable name="IN">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="DIVI">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[IF divi = 0.0 THEN
+	MODR := 0.0;
+ELSE
+	MODR := in - DINT_TO_REAL(FLOOR2(in / divi)) * divi;
+END_IF;
+(* from OSCAT library; www.oscat.de  *)
+(* FC FLOOR2 required *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[modulo funtion for real numbers modr(5.5,2.5) = 0.5]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="RAD" pouType="function">
+        <interface>
+          <returnType>
+            <REAL/>
+          </returnType>
+          <inputVars>
+            <variable name="_DEG">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[RAD := modR(0.0174532925199433 * _deg , 6.283185307179586476);
+(* from OSCAT library; www.oscat.de  *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[this function converts Radiant to degrees]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="program0" pouType="program">
+        <interface>
+          <localVars>
+            <variable name="LocalVar0">
+              <type>
+                <DINT/>
+              </type>
+            </variable>
+            <variable name="LocalVar1">
+              <type>
+                <DINT/>
+              </type>
+            </variable>
+            <variable name="LocalVar2">
+              <type>
+                <DINT/>
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <FBD>
+            <block localId="1" typeName="ADD" executionOrderId="0" height="60" width="70">
+              <position x="510" y="70"/>
+              <inputVariables>
+                <variable formalParameter="IN1">
+                  <connectionPointIn>
+                    <relPosition x="0" y="30"/>
+                    <connection refLocalId="2">
+                      <position x="510" y="100"/>
+                      <position x="465" y="100"/>
+                      <position x="465" y="80"/>
+                      <position x="420" y="80"/>
+                    </connection>
+                  </connectionPointIn>
+                </variable>
+                <variable formalParameter="IN2">
+                  <connectionPointIn>
+                    <relPosition x="0" y="50"/>
+                    <connection refLocalId="3">
+                      <position x="510" y="120"/>
+                      <position x="420" y="120"/>
+                    </connection>
+                  </connectionPointIn>
+                </variable>
+              </inputVariables>
+              <inOutVariables/>
+              <outputVariables>
+                <variable formalParameter="OUT">
+                  <connectionPointOut>
+                    <relPosition x="70" y="30"/>
+                  </connectionPointOut>
+                </variable>
+              </outputVariables>
+            </block>
+            <inVariable localId="2" executionOrderId="0" height="30" width="90" negated="false">
+              <position x="330" y="60"/>
+              <connectionPointOut>
+                <relPosition x="90" y="20"/>
+              </connectionPointOut>
+              <expression>LocalVar0</expression>
+            </inVariable>
+            <inVariable localId="3" executionOrderId="0" height="30" width="90" negated="false">
+              <position x="330" y="110"/>
+              <connectionPointOut>
+                <relPosition x="90" y="10"/>
+              </connectionPointOut>
+              <expression>LocalVar1</expression>
+            </inVariable>
+            <outVariable localId="4" executionOrderId="0" height="30" width="90" negated="false">
+              <position x="680" y="80"/>
+              <connectionPointIn>
+                <relPosition x="0" y="20"/>
+                <connection refLocalId="1" formalParameter="OUT">
+                  <position x="680" y="100"/>
+                  <position x="580" y="100"/>
+                </connection>
+              </connectionPointIn>
+              <expression>LocalVar2</expression>
+            </outVariable>
+          </FBD>
+        </body>
+      </pou>
+      <pou name="CIRCLE_A" pouType="function">
+        <interface>
+          <returnType>
+            <REAL/>
+          </returnType>
+          <inputVars>
+            <variable name="AX">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="RX">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[circle_A := Rx * RX * 8.726646E-3 * Ax;
+
+(* From OSCAT Library, www.OSCAT.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[circle_A calculates the Area of a circle segement if ax = 360 the whole circle is calculated]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="CIRCLE_C" pouType="function">
+        <interface>
+          <returnType>
+            <REAL/>
+          </returnType>
+          <inputVars>
+            <variable name="AX">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="RX">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[circle_C := 1.7453293E-2 * Rx * Ax;
+(* From OSCAT Library, www.OSCAT.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[circle_C calculates the Circumference of a circle  if ax = 360 the whole circle is calculated]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="CIRCLE_SEG" pouType="function">
+        <interface>
+          <returnType>
+            <REAL/>
+          </returnType>
+          <inputVars>
+            <variable name="RX">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="HX">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[IF RX > 0.0 THEN
+	CIRCLE_SEG := 2.0 * ACOS(1.0 - LIMIT(0.0, HX / RX, 2.0));
+	CIRCLE_SEG := (CIRCLE_SEG - SIN(CIRCLE_SEG)) * RX * RX * 0.5;
+END_IF;
+
+(* From OSCAT Library, www.OSCAT.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[CIRCLE_SEG calculates the Area of a circle segement enclosed between a sectant line and the circumference]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="CONE_V" pouType="function">
+        <interface>
+          <returnType>
+            <REAL/>
+          </returnType>
+          <inputVars>
+            <variable name="RX">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="HX">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[cone_V := 1.047197551 * RX * RX * hx;
+
+(* From OSCAT Library, www.OSCAT.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[cone_V calculates the Volume of a cone]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="ELLIPSE_A" pouType="function">
+        <interface>
+          <returnType>
+            <REAL/>
+          </returnType>
+          <inputVars>
+            <variable name="R1">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="R2">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[ellipse_A := 3.14159265358979323846264338327950288 * R1 * R2;
+
+(* From OSCAT Library, www.OSCAT.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[ellipse_A calculates the Area of an ellipe based on the two radians R1 and R2]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="ELLIPSE_C" pouType="function">
+        <interface>
+          <returnType>
+            <REAL/>
+          </returnType>
+          <inputVars>
+            <variable name="R1">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="R2">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[ELLIPSE_C := 3.14159265358979323846264338327950288 * (3.0 * (R1+R2) - SQRT((3.0 * r1 + R2) * (3.0 * r2 + r1)));
+
+(* From OSCAT Library, www.OSCAT.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[ellipse_C calculates the circumference of an ellipe based on the two radians R1 and R2]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="SPHERE_V" pouType="function">
+        <interface>
+          <returnType>
+            <REAL/>
+          </returnType>
+          <inputVars>
+            <variable name="RX">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[sphere_V := 4.188790205 * Rx * RX * RX;
+
+(* From OSCAT Library, www.OSCAT.de *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[calculates the Volume of a Sphere]]></xhtml:p>
+        </documentation>
+      </pou>
+      <pou name="TRIANGLE_A" pouType="function">
+        <interface>
+          <returnType>
+            <REAL/>
+          </returnType>
+          <inputVars>
+            <variable name="A">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="S1">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="S2">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+            <variable name="S3">
+              <type>
+                <REAL/>
+              </type>
+            </variable>
+          </inputVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml:p><![CDATA[IF A = 0.0 THEN
+	TRIANGLE_A := SQRT((s1+s2+S3) * (s1+s2-S3) * (S2+S3-S1) * (S3+S1-S2)) * 0.25;
+ELSE
+	TRIANGLE_A := S1 * S2 * SIN(RAD(A)) * 0.5;
+END_IF;
+
+(* From OSCAT Library, www.OSCAT.de *)
+(* RAD, MODR, FLOOR2 required *)]]></xhtml:p>
+          </ST>
+        </body>
+        <documentation>
+          <xhtml:p><![CDATA[triangle_A calculates the Area of a triangle. if any input is 0 it will be neglected and the are will be calculated from eiter: two sides and an angle (s1 and S2 and the angle A1) or 3 sides.]]></xhtml:p>
+        </documentation>
+      </pou>
+    </pous>
+  </types>
+  <instances>
+    <configurations>
+      <configuration name="Config0">
+        <resource name="Res0">
+          <task name="task0" priority="0" interval="T#20ms">
+            <pouInstance name="instance0" typeName="program0"/>
+          </task>
+        </resource>
+      </configuration>
+    </configurations>
+  </instances>
+</project>
